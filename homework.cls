@@ -21,7 +21,7 @@
 {
 	\fancyhead{}
 	\fancyfoot{}
-	\fancyfoot[LE,LO]{\@studentname \ - \texttt{\@studentmail}}
+	\fancyfoot[LE,LO]{\@studentname}
 	\fancyfoot[RE,RO]{\thepage}
 	\renewcommand{\headrulewidth}{0pt}
 }
@@ -30,15 +30,15 @@
 
 \fancyhead{}
 \fancyfoot{}
-\fancyhead[RE,RO]{Problem Set \#\@homeworknumber}
+\fancyhead[RE,RO]{Kernelized Locality Sensitive Hashing}
 \fancyhead[LE,LO]{\@coursename}
 \fancyfoot[RE,RO]{\thepage}
-\fancyfoot[LE,LO]{\@studentname \ - \texttt{\@studentmail}}
+\fancyfoot[LE,LO]{\@studentname}
 \renewcommand{\footrulewidth}{0.3pt}
 
-\title{\textsf{\@coursename: \@homeworknumber}}
+%\title{\textsf{\@coursename: \@homeworknumber}}
 \author{%
-  \@studentname \ - \texttt{\@studentmail}
+  \@studentname \\ \texttt{\@studentmail}
 }
 \date{\today}
 
