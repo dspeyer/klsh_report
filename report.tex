@@ -13,8 +13,8 @@
 \collaborators{none}             % THE UNI'S OF STUDENTS YOU DISCUSSED WITH
 
 
-\let\oldto\to
-\renewcommand{\to}{\longrightarrow}
+%\let\oldto\to
+%\renewcommand{\to}{\longrightarrow}
 
 \begin{document}
 \maketitle
@@ -71,7 +71,7 @@ problems.
 
 \section{Kernels} % geelon
 
-One of the most natural ways to encode structure into an abstract set $\mathcal{X}$ is to provide a mapping  from that set to the reals, $\mathcal{X} \to \bbR$. Or more generally, a mapping to some structure-rich mathematical object $\mathcal{O}$. Indeed, at a high level, we can consider different mathematical objects as the `canonical' idealization of certain types of structure; then, certain functions from $\mathcal{X}$ to these objects allow us to `pull back' or instantiate that structure within our specific $\mathcal{X}$.
+One of the most natural ways to encode structure into an abstract set $\mathcal{X}$ is to provide a mapping  from that set to the reals, $\mathcal{X} \to \bbR$. Or more generally, a mapping to some structure-rich mathematical object. Indeed, at a high level, we can consider different mathematical objects as the `canonical' idealization of certain types of structure; then, certain functions from $\mathcal{X}$ to these objects allow us to `pull back' or instantiate that structure within our specific $\mathcal{X}$.
 
 Of course, the structure we care about with respect to LSH is \emph{similarity}, one idealization of which is the \emph{(real) inner product}. Let us take a moment to reexamine the inner product on finite real vector spaces as a notion of similarity, before generalizing that notion using \emph{kernels} to infinite dimensional vector spaces and arbitrary sets.
 
@@ -114,7 +114,7 @@ This is the main payoff to all this formality: we may view the pair $(\bbR^n, \l
 Furthermore, we are now justified in dropping the distinction between the formal dot product and inner product; let us denote both by $\langle \cdot, \cdot\rangle$.
 
 \subsection{Generalization: Kernels and Hilbert Spaces}
-First, we will need to extend the `similarity measure' from vector spaces $V$ to abstract sets $\mathcal{X}$. In the former, notice that given a basis $\{v_1,\dotsc, v_n\}$, the inner product $K$ is fully determined by the collection of values, $K(v_i,v_j)$ where $i,j$ range between 1 and $n$. This follows from bilinearity of $K$; this is equivalent to saying that we can represent the bilinear form $K$ by a matrix of $n\times n$ values $\mathbf{K}$. In some sense, this means that there are only `$n$ ways' or `$n$ directions' in which objects of $V$ may be (dis)similar.
+First, we will need to extend the `similarity measure' from vector spaces $V$ to abstract sets $\mathcal{X}$. In the former, notice that given a basis $\{v_1,\dotsc, v_n\}$, the inner product $K$ is fully determined by the collection of values $K(v_i,v_j)$, where $i,j$ range between 1 and $n$. This follows from bilinearity of $K$ and is equivalent to saying that we can represent the bilinear form $K$ by a matrix of $n\times n$ values $\mathbf{K}$. In some sense, this means that there are only `$n$ ways' or `$n$ directions' in which objects of $V$ may be (dis)similar.
 
 This suggests that we can generalize Definition~\ref{IP} because we didn't need all of $V$ to start with! Suppose someone secretly had an $n$-dimensional inner product space $(V,K)$, but just gave us $n$ linearly independent vectors, say $[n] := \{v_1,\dotsc, v_n\}$, along with the corresponding restriction of the similarity measure $K: [n] \times [n] \to \bbR$.
 
@@ -163,35 +163,52 @@ This is a powerful result because we may now view $\mathcal{X}$ not as an abstra
   The Hilbert space $\mathcal{H}$ induced by $K$ is unique. We call $\mathcal{H}$ the \emph{reproducing kernel Hilbert space (RKHS)} on $\mathcal{X}$ with respect to $K$. (See \cite[Prop 3.3]{P2009}).
 \end{fact}
 
-Later, we'll see a converse: if $\mathcal{H}$ is an RKHS, so it is a Hilbert space composed of a collection of \emph{functions} over $\mathcal{X}$ (in particular, $L^2(\bbR)$ is not an RKHS), then $\mathcal{H}$ induces a unique kernel $K$ on $\mathcal{X}$. So, analogous to the finite-dimensional case, we can think of $\Phi(\mathcal{X})$ in $\mathcal{H}$ as the `canonical form' of $\mathcal{X}$ with respect to the similary measure $K$.
+Later, we'll see a characterization of RKHS's: if $\mathcal{H}$ is one, then $\mathcal{H}$ induces a unique kernel $K$ on $\mathcal{X}$. So, analogous to the finite-dimensional case, we can think of $\Phi(\mathcal{X})$ in $\mathcal{H}$ as the `canonical form' of $\mathcal{X}$ with respect to the similary measure $K$.
 
 
 
-Despite this, the way we've presented the embedding of $\mathcal{X}$ into $\mathcal{H}$ is somewhat unnatural. While it makes sense to consider the collection of functions $k_x$, the identification of $x$ with $k_x$ may seem \emph{ad hoc}. But if we venture a bit further into functional analysis, we may obtain a clearer understanding of RKHS's. Along the way, hopefully we can clarify why we might call $\Phi$ a \emph{feature map}.
+Despite this, the way we've presented the embedding of $\mathcal{X}$ into $\mathcal{H}$ is somewhat unnatural. While it makes sense to consider the collection of functions $k_x$, the identification of $x$ with $k_x$ may seem \emph{ad hoc}. But if we venture a bit further into functional analysis, we may obtain a clearer understanding of RKHS's. Along the way, hopefully we can clarify why we might call this identification a feature map.
 
 \subsection{Feature Maps}
-Let us once again consider an abstract set $\mathcal{X}$, and a collection of functions over $\mathcal{X}$, say $\mathcal{H} \subset \bbR^\mathcal{X}$. We may imagine each $f \in \mathcal{H}$ as an observable or a feature, where $f(x)$ gives the \emph{measurement} value of the object $x$ by feature $f$.
+Let us once again consider an abstract set $\mathcal{X}$, and a collection of functions over $\mathcal{X}$, say $\mathcal{H} \subset \bbR^\mathcal{X}$. We may imagine each $f \in \mathcal{H}$ as an observable or a feature, where $f(x)$ gives the \emph{measured value} of the object $x$ by feature $f$.
 
 As a result, every $x \in \mathcal{X}$ is associated to the Cartesian product of measurements,
 \begin{equation}\label{dual}
-  x \overset{\Phi}{\mapsto}\prod_{f \in \mathcal{H}} f(x).
+  x \overset{\Psi}{\mapsto}\prod_{f \in \mathcal{H}} f(x).
 \end{equation}
-The high-level punchline here will be that $\Phi(x)$ is actually a point in the \emph{dual} of $\mathcal{H}$, following the canonical mapping of $\mathcal{X}$ into the double dual $\mathcal{X}^{**}$. But in the case where $\mathcal{H}$ is a Hilbert space and all the $\Phi(x) \in \mathcal{H}^*$ are bounded (i.e. continuous), then $\mathcal{H}$ is isomorphic to $\mathcal{H}^*$, justifying the initial definition $\Phi : x \mapsto k_x$.
+The high-level punchline here will be that $\Psi(x)$ is actually a point in the \emph{dual} of $\mathcal{H}$, following the canonical mapping of $\mathcal{X}$ into the double dual $\mathcal{X}^{**}$. But in the case where $\mathcal{H}$ is a Hilbert space and all the $\Psi(x) \in \mathcal{H}^*$ are bounded (i.e. continuous), then $\mathcal{H}$ is isomorphic to $\mathcal{H}^*$. It turns out that $\Psi(x)$ is naturally identified with $k_x$, justifying the initial definition $\Phi : x \mapsto k_x$.
 
 Before elaborating on this, let us provide a visual example; perhaps a bit of concreteness will convince the reader why we should even care about the association in Equation~\ref{dual} in the first place.
 
-Imagine $\mathcal{X}$ is a set of abstract cats, while $\mathcal{H} = \{f_1,\dotsc, f_n\}$ represents the pixels within the lens of a camera. Given a cat $x$, the value $f_i(x)$ gives the color the $i$th pixel on the camera. Then, the product $\Phi(x)$ in Equation~\ref{dual} represents the \emph{image} of the cat---the collection of colors all the camera pixels see as the camera takes the picture of cat $x$.
+Imagine $\mathcal{X}$ is a set of abstract cats, while $\mathcal{H} = \{f_1,\dotsc, f_n\}$ represents the pixels within the lens of a camera. Given a cat $x$, the value $f_i(x)$ gives the color the $i$th pixel on the camera. Then, the product $\Psi(x)$ in Equation~\ref{dual} represents the \emph{image} of the cat---the collection of colors all the camera pixels see as the camera takes the picture of cat $x$.
 
 Here, it makes sense to call the mapping in Equation~\ref{dual} the \emph{feature map}, for it maps the cat to a collection of features, specifically its colors at different locations. In general, given any function $f : \mathcal{X} \to \bbR$, we may dually view points of $x$ as functionals, $\mathrm{ev}_x : \mathcal{H} \to \bbR$, where
 \[\mathrm{ev}_x(f) := f(x).\]
-In functional analysis, we say that $\mathrm{ev}_x$ is the \emph{evaluation at $x$}, and we view it as an element of the \emph{dual space} $\bbR^\mathcal{H}$ of $\mathcal{H}$, which we denote by $\mathcal{H}^*$.\footnote{More precisely, $\mathcal{H}^*$ is the \emph{continuous dual} of $\mathcal{H}$, and not the \emph{algebraic dual}. The former is the collection of continuous functionals on $\mathcal{H}$. The earlier point that $\mathcal{H}$ is a collection of functions over $\mathcal{X}$ is equivalent to saying that the evaluation functionals are continuous.} To recapitulate, $\Phi(x) = \mathrm{ev}_x$.
+In functional analysis, we say that $\mathrm{ev}_x$ is the \emph{evaluation at $x$}, and if it is continuous, then we view it as an element of a larger set of continuous functionals on $\mathcal{H}$, the \emph{continuous dual}, $\mathcal{H}^*$.\footnote{The earlier point that $\mathcal{H}$ is a collection of functions over $\mathcal{X}$ is equivalent to saying that the evaluation functionals are continuous.} Let us return to kernels. But whereas in the previous section, the feature map fell out of the construction almost incidentally, here, we begin with it: $\Psi(x) = \mathrm{ev}_x$.
 
-Returning back to kernels as measures of similarity, we can obtain a more subtle understanding of the function $k_x(y) = K(y,x)$. Here, $k_x$ is an observable/feature, corresponding to \emph{how similar is $y$ to $x$}---in some sense, $x$ is `doing the measurement', while $y$ is the object `being measured'. So technically, we should think of $k_x(y)$ as:
-\[k_x(y) \equiv \mathrm{ev}_y(k_x).\]
-That is, there are actually two objects: $k_x$ and $\mathrm{ev}_y$. [NEED TO CLEAN UP NOTATION] Given $K(\cdot,\cdot)$, it is perfectly natural to consider $\Phi: x \mapsto \mathrm{ev}_x$ and $\Psi: x \mapsto k_x$. Now, assuming that there is a RKHS $\mathcal{H}$ containing $\Psi(\mathcal{X})$ such that $\Phi(\mathcal{X}) \subset \mathcal{H}^*$, then we would have
-\[K(x,y) = \langle \Phi(x), \Psi(y)\rangle_\mathcal{H}.\]
-It is the conditions of symmetry and positive-definiteness that allows, and actually forces, $\Phi \cong \Psi$ to be isomorphic via the canonical isomorphism between $\mathcal{H}$ and its dual.
+In particular, we equivalently define an RKHS (equivalency will become clear):
+\begin{definition}
+Let $\mathcal{H} \subset \bbR^{\mathcal{X}}$ be a Hilbert space. It is an RKHS if for all $x \in \mathcal{X}$, the evaluation functional $\mathrm{ev}_x$ is continuous.
+\end{definition}
+That is, $\mathcal{H}$ is an RKHS if $\Psi(\mathcal{X}) \subset \mathcal{H}^*$. As made intuitive by the cat images example, $\Psi(\mathcal{X})$ is the representation of $\mathcal{X}$ seen through the lens of features $\mathcal{H}$. And if those features are quite discerning, for any distinct objects $x,y \in \mathcal{X}$, we might expect that their differences will be measurable; there exists some $f \in \mathcal{H}$ such that $f(x) \ne f(y)$. When this is the case, we say that $\mathcal{H}$ \emph{separates points}, and it follows that:
+\begin{proposition}
+  The mapping $\Psi : \mathcal{X} \to \mathcal{H}^*$ is injective if and only if $\mathcal{H}$ separates points.
+\end{proposition}
 
+So in many cases, we may think of $\Psi$ as an embedding of $\mathcal{X}$ into $\mathcal{H}^*$. But then, Riesz representation theorem states that $\mathcal{H} \cong \mathcal{H}^*$. This is a powerful isomorphism, for it implies that every $x$, which corresponds to a unique $\Psi(x) \in \mathcal{H}^*$, then corresponds to some unique point $k_x$ in $\mathcal{H}$ such that:
+\[\Psi(x) = \langle \cdot, k_x\rangle_\mathcal{H}.\]
+We call $k_x$ the \emph{reproducing kernel for the point $x$}, and for consistency, we can let $\Phi: x \mapsto k_x$. But via the isomorphism, we may afford to drop the distinction between $\Psi$ and $\Phi$.
+
+Now, as vectors in a Hilbert space, the points $k_x$ inherits the similarity measure from the inner product on $\mathcal{H}$, obtaining a positive-definite kernel:
+\[K(x,y) = \langle k_y, k_x\rangle_\mathcal{H}.\]
+We call $K$ the \emph{reproducing kernel of $\mathcal{H}$}, for $\mathcal{H}$ uniquely determines $K$. Recalling from before---every kernel $K$ uniquely determines an $\mathcal{H}$---we now see that these two views of RKHS's we've provided are equivalent. And whenever we are given a set $\mathcal{X}$ with a positive-definite kernel, we can reason as though we know that they belong to a Hilbert space $\mathcal{H}$.
+
+\subsection{In Practice}
+In many cases, one important limitation is the infeasibility of construction $\Phi$. And especially in a computational setting, if $\mathcal{H}$ is infinite dimensions, representation of its vectors becomes even more problematic.
+
+Still, we can still take advantage of the existence of $\Phi$; sometimes we can reason about properties of $\mathcal{X}$ as points in $\mathcal{H}$, but pull the analysis back through $K$.
+
+In the rest of the paper, we'll look at how this may be done for LSH.
 \section{Unusual Distance Metrics} % dspeyer
   
 \section{KLSH}
@@ -291,6 +308,16 @@ inner products:
 \subsection{Making the Calculations}
 
 \begin{thebibliography}{9}
+  
+\bibitem{A1950} Aronszajn, Nachman. \emph{Theory of reproducing kernels}. Transactions of the American mathematical society 68.3 (1950): 337-404.
+
+\bibitem{G2013} Gretton, Arthur. \emph{Introduction to RKHS, and some simple kernel algorithms}. Adv. Top. Mach. Learn. Lecture Conducted from University College London (2013).
+
+\bibitem{H2008} Hofmann, Thomas, Bernhard Schölkopf, and Alexander J. Smola. \emph{Kernel methods in machine learning}. The annals of statistics (2008): 1171-1220.
+
+\bibitem{J2015} Jiang, Ke, Qichao Que, and Brian Kulis. \emph{Revisiting kernelized locality-sensitive hashing for improved large-scale image retrieval}. Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2015.
+  
+\bibitem{K2012} Kulis, Brian, and Kristen Grauman. \emph{Kernelized locality-sensitive hashing}. IEEE Transactions on Pattern Analysis and Machine Intelligence 34.6 (2012): 1092-1104.
 
 \bibitem{P2009} Paulsen, Vern I., and Mrinal Raghupathi. \emph{An introduction to the theory of reproducing kernel Hilbert spaces}. Vol. 152. Cambridge University Press, 2016. 
 
