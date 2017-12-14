@@ -100,17 +100,20 @@
 \newcommand\Dotp[1]{\left\langle#1\right\rangle}
 
 % theorem styles
-\newtheorem{lemma}{Lemma}
-\newtheorem{claim}{Claim}
-\newtheorem{proposition}{Proposition}
+
 \newtheorem{theorem}{Theorem}
-\newtheorem{corollary}{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{fact}[theorem]{Fact}
 \theoremstyle{remark}
-\newtheorem{remark}{Remark}
+\newtheorem{remark}[theorem]{Remark}
 \theoremstyle{definition}
-\newtheorem{definition}{Definition}
-\newtheorem{condition}{Condition}
-\newtheorem{example}{Example}
-\newtheorem{problem}{Problem}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{problem}[theorem]{Problem}
+
 
 \endinput
