@@ -209,7 +209,7 @@ In many cases, one important limitation is the infeasibility of construction $\P
 Still, we can still take advantage of the existence of $\Phi$; sometimes we can reason about properties of $\mathcal{X}$ as points in $\mathcal{H}$, but pull the analysis back through $K$.
 
 In the rest of the paper, we'll look at how this may be done for LSH.
-\section{Unusual Distance Metrics} % dspeyer
+\section{Similarity Metrics, Unusual and Usual} % dspeyer
   
 \section{KLSH}
 
@@ -217,25 +217,25 @@ Now we are ready to put the pieces together into KLSH.  Suppose we
 have a set of objects $\cX$ on which the only defined function is a
 simularity metric $K:\cX \times \cX \rightarrow [0,1]$ (with
 $K(x,x)=1$).  In the most
-common example, $\cX$ is images and $K$ is whatever the computer
+common example, $\cX$ is a collection of images and $K$ is whatever kernel the computer
 vision community recommends.  And let us suppose we know $K$ to be
 positive-definite.
 
-Note that $\cX$ is \emph{not} a vectorspace.  We cannot add two
+Note that $\cX$ is \emph{not} generally a vector space.  We cannot add two
 images, nor take their inner product.  We cannot generate a random
-image drawn from a gaussian distribution.  These things are not
-defined.  Furthermore, we cannot find a function $\Phi$ that would map
-the image into a vectorspace.  We know one exists, but we do not have
+image drawn from a Gaussian distribution.  These things are not
+defined.  Furthermore, we might be unable to find a function $\Phi$ that would map
+the image into a vector space.  We know one exists, but we do not have
 it, nor do we know any interesting properties of the Hilbert space it
 maps into.
 
 Nevertheless, we would like to apply LSH techniques that are defined
 in the kernel space to search problems in the object space.
   
-\subsection{Getting a Normal Distribution} % dspeyer
+\subsection{Normal Distributions in RKHS} % dspeyer
 
-Most LSH techniques -- including hyperplane carving the unit sphere,
-which will be our first attempt here -- require drawing points $g$ from a
+Most LSH techniques---including hyperplane carving the unit sphere,
+which will be our first attempt here---require drawing points $g$ from a
 normal distribution.  As we observed, we cannot do this in $\cX$
 because it is undefined, and we cannot do this in $\cH$ because we
 cannot describe any point in $\cH$.
@@ -255,7 +255,7 @@ distributions might require larger $n$s.
 
 If we select a random point $x$ from our database (equal chance of
 each point) and consider its $\Phi(x)$, this is a distribution in
-$\cH$, albeit a strange and discreet one.  That's good enough for the
+$\cH$, albeit a strange and discrete one.  That's good enough for the
 central limit theorem to apply.  This lets us ``draw'' a point in
 $\cH$ from $\cN(\mu,\Sigma)$.  Furthermore, we can convert this into a
 point from $\cN(0,I)$ by subtracting $\mu$ and multiplying by
