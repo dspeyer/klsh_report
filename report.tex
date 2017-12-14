@@ -142,6 +142,9 @@ In functional analysis, we say that $\mathrm{ev}_x$ is the \emph{evaluation at $
 
 Returning back to kernels as measures of similarity, we can obtain a more subtle understanding of the function $k_x(y) = K(y,x)$. Here, $k_x$ is an observable/feature, corresponding to \emph{how similar is $y$ to $x$}---in some sense, $x$ is `doing the measurement', while $y$ is the object `being measured'. So technically, we should think of $k_x(y)$ as:
 \[k_x(y) \equiv \mathrm{ev}_y(k_x).\]
+That is, there are actually two objects: $k_x$ and $\mathrm{ev}_y$. [NEED TO CLEAN UP NOTATION] Given $K(\cdot,\cdot)$, it is perfectly natural to consider $\Phi: x \mapsto \mathrm{ev}_x$ and $\Psi: x \mapsto k_x$. Now, assuming that there is a RKHS $\mathcal{H}$ containing $\Psi(\mathcal{X})$ such that $\Phi(\mathcal{X})$ \subset \mathcal{H}^*$, then we would have
+\[K(x,y) = \langle \Phi(x), \Psi(y)\rangle_\mathcal{H}.\]
+It is the conditions of symmetry and positive-definiteness that allows, and actually forces, $\Phi \cong \Psi$ to be isomorphic via the canonical isomorphism between $\mathcal{H}$ and its dual.
 
 
 
