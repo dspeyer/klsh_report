@@ -16,12 +16,12 @@
 \begin{document}
 \maketitle
 
-\begin{abstract} Test
+\begin{abstract}
 \end{abstract}
 
 \section{Introduction}
 
-%\subsection{LSH} % dspeyer
+\subsection{LSH} % dspeyer
 
 \section{Kernels} % geelon
 
@@ -99,7 +99,9 @@ That is, $f(x) = 0$ for all $x \in \mathcal{X}$. Then, $\langle f, g\rangle$ bet
 \[\langle k_x, f\rangle = \sum_{i=1}^n k_{x_i}(x) = f(x) = 0.\]
 This proves that $V$ admits an inner product that is compatible with $K$ in the sense of Equation~\ref{canonical-inner-prod}. We will in fact go beyond producing an inner product space $V$; we can complete the space with respect to the norm induced by the inner product, producing a \emph{Hilbert space}.
 
-That is, let $\mathcal{H}$ be the completion of $V$ by taking equivalence classes of Cauchy sequences on $V$. We claim that $\mathcal{H} \subset \bbR^\mathcal{X}$ is a collection of functions.\footnote{Note that in general, it is not the case that the completion of a function space consists of functions. Take any Dirac delta distribution from within $L^2(\bbR)$, for example.} But let us relegate the proof to references, say \cite[Thm 3.16]{P2009}, for it is not particularly enlightening. What we do attain, however, is the analog to Proposition~\ref{finite-IP}:
+That is, let $\mathcal{H}$ be the completion of $V$ by taking equivalence classes of Cauchy sequences on $V$. We claim that $\mathcal{H} \subset \bbR^\mathcal{X}$ is a collection of functions in the sense that $f(x) < \infty$ for all $f \in \mathcal{H}$ and $x \in \mathcal{X}$.\footnote{Note that in general, it is not the case that the completion of a function space consists of functions. Take any Dirac delta distribution from within $L^2(\bbR)$, for example.} But let us relegate the proof to references, say \cite[Thm 3.16]{P2009}, for it is not particularly enlightening. However, the consequences are quite important.
+
+First of all, we immediately attain the analog to Proposition~\ref{finite-IP}:
 
 \begin{proposition}[Moore]
   Let $\mathcal{X}$ be a set, and $K: \mathcal{X} \times \mathcal{X} \to \bbR$ a positive-definite kernel. Then, there exists a map $\Phi: \mathcal{X} \to \mathcal{H}$ into a Hilbert space such that the following map commutes:
@@ -110,11 +112,33 @@ That is, let $\mathcal{H}$ be the completion of $V$ by taking equivalence classe
     \]
     where $\langle \cdot, \cdot\rangle_\mathcal{H}$ is the inner product on $\mathcal{H}$.
 \end{proposition}
-The amazing aspect here was that $\mathcal{X}$ was just a set; the only thing we needed was a positive-definite kernel $K$ to obtain $\mathcal{H}$. In fact:
+It is particularly amazing because $\mathcal{X}$ was just a set; the only thing we needed required was a positive-definite kernel $K$ to obtain $\mathcal{H}$. And in fact:
 \begin{fact}
   The Hilbert space $\mathcal{H}$ induced by $K$ is unique. We call $\mathcal{H}$ the \emph{reproducing kernel Hilbert space (RKHS)} on $\mathcal{X}$ with respect to $K$. (See \cite[Prop 3.3]{P2009}).
 \end{fact}
 
+This is a powerful result because we may now view $\mathcal{X}$ not as an abstract set, but as vectors within a Hilbert space, which carries with it both algebraic and geometric properties which $\mathcal{X}$ now inherits.
+
+Despite this, the way we've presented the embedding of $\mathcal{X}$ into $\mathcal{H}$ is somewhat unnatural. While it makes sense to consider the collection of functions $k_x$, the identification of $x$ with $k_x$ may seem \emph{ad hoc}. But if we allow ourselves to borrow some powerful facts from functional analysis, we may obtain a deeper and more natural understanding of RKHS's. Indeed, hopefully we can clarify why we might call $\Phi$ a \emph{feature map}.
+
+\subsection{Feature Map}
+Let us once again consider an abstract set $\mathcal{X}$, and a collection of functions over $\mathcal{X}$, say $\mathcal{H} \subset \bbR^\mathcal{X}$. We may imagine each $f \in \mathcal{H}$ as an observable or a feature, where the value $f(x)$ gives the value after \emph{measuring} the object $x$ with feature $f$.
+
+As a result, every $x \in \mathcal{X}$ is associated to the collection of measurements,
+\begin{equation}\label{dual}
+  x \overset{\Phi}{\mapsto}\prod_{f \in \mathcal{H}} f(x).
+\end{equation}
+The high-level punchline here will be that $\Phi(x)$ is actually a point in the \emph{dual} of $\mathcal{H}$, following the canonical mapping of $\mathcal{X}$ into the double dual $\mathcal{X}^{**}$. But in the case where $\mathcal{H}$ is a Hilbert space and all the $\Phi(x) \in \mathcal{H}^*$ are bounded (i.e. continuous), then $\mathcal{H}$ is isomorphic to $\mathcal{H}^*$, justifying the initial definition $\Phi : x \mapsto k_x$.
+
+Before elaborating on this, let us provide a visual example; perhaps a bit of concreteness will convince the reader why we should even care about the association in Equation~\ref{dual} in the first place.
+
+Imagine $\mathcal{X}$ is a set of abstract cats, while $\mathcal{H} = \{f_1,\dotsc, f_n\}$ represents the pixels within the lens of a camera. Given a cat $x$, the value $f_i(x)$ gives the color the $i$th pixel on the camera. Then, the product $\Phi(x)$ in Equation~\ref{dual} represents the \emph{image} of the cat---the collection of colors all the camera pixels see as the camera takes the picture of cat $x$.
+
+Here, it makes sense to call the mapping in Equation~\ref{dual} the \emph{feature map}, for it maps the cat to its features, specifically its colors at specific locations. In general, given any function $f : \mathcal{X} \to \bbR$, we may dually view points of $x$ as functionals, $\mathrm{ev}_x : \mathcal{H} \to \bbR$, where
+\[\mathrm{ev}_x(f) := f(x).\]
+In functional analysis, we say that $\mathrm{ev}_x$ is the \emph{evaluation at $x$}, and we view it as an element of the \emph{dual space} $\bbR^\mathcal{H}$ of $\mathcal{H}$, which we denote by $\mathcal{H}^*$.\footnote{Many cases, $\mathcal{H}^*$ will denote the \emph{continuous dual} of $\mathcal{H}$, and not the \emph{algebraic dual}. Indeed, we want to consider the continuous dual here, the collection of continuous functionals on $\mathcal{H}$.} To recapitulate, $\Phi(x) = \mathrm{ev}_x$.
+
+Return back to kernels as measures of similarity,
 
 
 
