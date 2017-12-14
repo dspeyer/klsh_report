@@ -31,6 +31,49 @@
 
 \subsection{LSH} % dspeyer
 
+Locality sensitive hashing is a general solution for searches in which
+the desired key is near or nearest to the query, rather than equal.
+It is not as efficient as tree-based solutions for $\bbR^n$ with small
+$n$, but unlike those solutions, it maintains its performance in high
+dimensions or in arbitrary metric spaces.
+
+Most near search problems can be reduced to cr-near search.  Suppose
+we have a database of points $x_1,x_2,...,x_n$ drawn from some
+arbitrary metric space $\cX$ and some query $q$ also from $\cX$, plus
+constants $c,r\in\bbR$.  A cr-near search seeks either an $x$ within
+distance $cr$ of $q$ or a statement that there are none within $r$.
+It is generally best to think of $r$ as part of the query and $c$ as
+the acceptable level of error.
+
+To use LSH for problems like this we will need a family of hashing
+functions $h_1,h_2,...$ that map $\cX$ into some small finite space,
+all following two key inequalities:
+
+\begin{eqnarray*}
+  ||x_1-x_2|| < r & \rightarrow & Pr[h(x_1)=h(x_2)] \geq p_1 \\
+  ||x_1-x_2|| > cr & \rightarrow & Pr[h(x_1)=h(x_2)] \leq p_2 \\
+\end{eqnarray*}
+
+Note that we may require an arbitrary number of hashing functions,
+which must be generated randomly.  It is this randomness that allows
+the use of probabilities in the preceding inequalities.  (The
+distribution of hashing functions is often written $\cH$, but we'll be
+reserving that symbol for Hilbert spaces later.)
+
+In the simplest example, $\cX$ is a high dimensional Hamming space and
+the hash functions sample random columns.  This may provide useful
+intuition for thinking about hash functions.
+
+Once we have a source of functions and a gap between $p_1$ and $p_2$,
+we can widen the gap by taking $n$ functions and concatenating their
+outputs (getting $p_1^n$ and $p_2^n$).  We can then deal with too low
+a $p_1^n$ by taking $m$ repetitions and searching all of them (getting
+$mp_1^n$ and $mp_2^n$).  This solves the cr-near problem with
+arbitrarily high probability, which can in turn solve other, similar
+problems.
+
+%TODO: Write about efficiency
+
 \subsection{Kernels} % geelon
 
 One of the most natural ways to encode structure into an abstract set $\mathcal{X}$ is to provide a mapping  from that set to the reals, $\mathcal{X} \to \bbR$. Or more generally, a mapping to some structure-rich mathematical object $\mathcal{O}$. Indeed, at a high level, we can consider different mathematical objects as the `canonical' idealization of certain types of structure; then, certain functions from $\mathcal{X}$ to these objects allow us to `pull back' or instantiate that structure within our specific $\mathcal{X}$.
@@ -126,11 +169,81 @@ The amazing aspect here was that $\mathcal{X}$ was just a set; the only thing we
   
 \subsection{Unusual Distance Metrics} % dspeyer
 
+
   
 \section{KLSH}
 
+Now we are ready to put the pieces together into KLSH.  Suppose we
+have a set of objects $\cX$ on which the only defined function is a
+simularity metric $K:\cX \times \cX \rightarrow [0,1]$ (with
+$K(x,x)=1$).  In the most
+common example, $\cX$ is images and $K$ is whatever the computer
+vision community recommends.  And let us suppose we know $K$ to be
+positive-definite.
+
+Note that $\cX$ is \emph{not} a vectorspace.  We cannot add two
+images, nor take their inner product.  We cannot generate a random
+image drawn from a gaussian distribution.  These things are not
+defined.  Furthermore, we cannot find a function $\Phi$ that would map
+the image into a vectorspace.  We know one exists, but we do not have
+it, nor do we know any interesting properties of the Hilbert space it
+maps into.
+
+Nevertheless, we would like to apply LSH techniques that are defined
+in the kernel space to search problems in the object space.
   
 \subsection{Getting a Normal Distribution} % dspeyer
+
+Most LSH techniques -- including hyperplane carving the unit sphere,
+which will be our first attempt here -- require drawing points from a
+normal distribution.  As we observed, we cannot do this in $\cX$
+because it is undefined, and we cannot do this in $\cH$ because we
+cannot describe any point in $\cH$.
+
+Nevertheless, we can draw points in $\cH$ from a normal distribution,
+and compute their inner products with points of the form $\Phi(x)$.
+
+The key is the central limit theorem.  This theorem states that if you
+draw $n$ points i.i.d. from any distribution and average
+them, the average will approximately be drawn from a normal
+distribution, whose mean is the same as that of the original, and
+whose covariance is that of the original times $\sqrt{n}$.  The
+``approximately'' goes away as $n$ approaches infinity.  In general,
+$n=30$ is sufficient to make a good enough approximation, though the
+theoretical bound is poorly studied, and extremely multimodal
+distributions might require larger $n$s.
+
+If we select a random point $x$ from our database (equal chance of
+each point) and consider its $\Phi(x)$, this is a distribution in
+$\cH$, albeit a strange and discreet one.  That's good enough for the
+central limit theorem to apply.  This lets us ``draw'' a point in
+$\cH$ from $\cN(\mu,\Sigma)$.  Furthermore, we can convert this into a
+point from $\cN(0,I)$ by subtracting $\mu$ and multiplying by
+$\Sigma^{-1/2}$.  That is to say:
+
+\begin{equation*}
+  g = \Sigma^{-1/2}\left(\frac{1}{n}\sum_i^n \Phi(x_i) \right) - \mu  \sim \cN(0,I)
+\end{equation*}
+
+Granted, we still cannot compute this.  By approximating $\Sigma$,
+however, we can compute per-point scalars $w_i$ such that $g=\sum
+w_u\Phi(x_i)$.  We can then use this form to compute
+inner products:
+
+\begin{eqnarry*}
+  \langle \Phi(q), g \rangle
+  & = & \langle \Phi(q), \sum_i w_i\Phi(x_i) \rangle \\
+  & = & \sum_i w_i \langle \Phi(q), \Phi(x_i) \rangle \\
+  & = & \sum_i w_i K(q, x_i) \\
+\end{eqnarray*}
+
+%% We can then take an eigen decomposition of $\Sigma^{-1/2}$ into vectors $v_j$ and values $\lambda_j$ and use this basis to describe $\Phi(x)=\sum_j \langle x,v_j \rangle v_j$.  Once we've described the average in the eigenbasis, we can regard the covariance multiplication as applying the eigenvalues.  From there, it's just a matter of changing the order of summation:
+
+%% \begin{eqnarray*}
+%%   \Sigma^{-1/2}\left(\frac{1}{n}\sum_i^n \Phi(x_i) \right)
+%%   & = & \Sigma^{-1/2}\frac{1}{n}\sum_i^n \sum_j \langle \Phi(x_i),v_j \rangle v_j \\
+%%   & = & \frac{1}{n} \Sigma^{-1/2} \sum_j \left( \sum_i^n \langle \Phi(x_i),v_j \rangle \right ) v_j \\
+%%   & = & \frac{1}{n} \sum_j \lambda_j \left( \sum_i^n \langle \Phi(x_i),v_j \rangle \right ) v_j \\
 
 \subsection{Approximating the Covariance} % geelon
 
