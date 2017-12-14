@@ -24,7 +24,7 @@
 
 \begin{multicols}{2}
 
-\subsection{LSH} % dspeyer
+\section{LSH} % dspeyer
 
 Locality sensitive hashing is a general solution for searches in which
 the desired key is near or nearest to the query, rather than equal.
@@ -188,7 +188,7 @@ In functional analysis, we say that $\mathrm{ev}_x$ is the \emph{evaluation at $
 
 Returning back to kernels as measures of similarity, we can obtain a more subtle understanding of the function $k_x(y) = K(y,x)$. Here, $k_x$ is an observable/feature, corresponding to \emph{how similar is $y$ to $x$}---in some sense, $x$ is `doing the measurement', while $y$ is the object `being measured'. So technically, we should think of $k_x(y)$ as:
 \[k_x(y) \equiv \mathrm{ev}_y(k_x).\]
-That is, there are actually two objects: $k_x$ and $\mathrm{ev}_y$. [NEED TO CLEAN UP NOTATION] Given $K(\cdot,\cdot)$, it is perfectly natural to consider $\Phi: x \mapsto \mathrm{ev}_x$ and $\Psi: x \mapsto k_x$. Now, assuming that there is a RKHS $\mathcal{H}$ containing $\Psi(\mathcal{X})$ such that $\Phi(\mathcal{X})$ \subset \mathcal{H}^*$, then we would have
+That is, there are actually two objects: $k_x$ and $\mathrm{ev}_y$. [NEED TO CLEAN UP NOTATION] Given $K(\cdot,\cdot)$, it is perfectly natural to consider $\Phi: x \mapsto \mathrm{ev}_x$ and $\Psi: x \mapsto k_x$. Now, assuming that there is a RKHS $\mathcal{H}$ containing $\Psi(\mathcal{X})$ such that $\Phi(\mathcal{X}) \subset \mathcal{H}^*$, then we would have
 \[K(x,y) = \langle \Phi(x), \Psi(y)\rangle_\mathcal{H}.\]
 It is the conditions of symmetry and positive-definiteness that allows, and actually forces, $\Phi \cong \Psi$ to be isomorphic via the canonical isomorphism between $\mathcal{H}$ and its dual.
 
@@ -218,7 +218,7 @@ in the kernel space to search problems in the object space.
 \subsection{Getting a Normal Distribution} % dspeyer
 
 Most LSH techniques -- including hyperplane carving the unit sphere,
-which will be our first attempt here -- require drawing points from a
+which will be our first attempt here -- require drawing points $g$ from a
 normal distribution.  As we observed, we cannot do this in $\cX$
 because it is undefined, and we cannot do this in $\cH$ because we
 cannot describe any point in $\cH$.
@@ -249,11 +249,11 @@ $\Sigma^{-1/2}$.  That is to say:
 \end{equation*}
 
 Granted, we still cannot compute this.  By approximating $\Sigma$,
-however, we can compute per-point scalars $w_i$ such that $g=\sum
-w_u\Phi(x_i)$.  We can then use this form to compute
+however, we can compute per-point scalars $w_i$ such that $g=\sum_i
+w_i\Phi(x_i)$.  We can then use this form to compute
 inner products:
 
-\begin{eqnarry*}
+\begin{eqnarray*}
   \langle \Phi(q), g \rangle
   & = & \langle \Phi(q), \sum_i w_i\Phi(x_i) \rangle \\
   & = & \sum_i w_i \langle \Phi(q), \Phi(x_i) \rangle \\
