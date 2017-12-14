@@ -29,15 +29,15 @@
 
 \section{Introduction}
 
-%\subsection{LSH} % dspeyer
+\subsection{LSH} % dspeyer
 
-\section{Kernels} % geelon
+\subsection{Kernels} % geelon
 
 One of the most natural ways to encode structure into an abstract set $\mathcal{X}$ is to provide a mapping  from that set to the reals, $\mathcal{X} \to \bbR$. Or more generally, a mapping to some structure-rich mathematical object $\mathcal{O}$. Indeed, at a high level, we can consider different mathematical objects as the `canonical' idealization of certain types of structure; then, certain functions from $\mathcal{X}$ to these objects allow us to `pull back' or instantiate that structure within our specific $\mathcal{X}$.
 
 Of course, the structure we care about with respect to LSH is \emph{similarity}, one idealization of which is the \emph{(real) inner product}. Let us take a moment to reexamine the inner product on finite real vector spaces as a notion of similarity, before generalizing that notion using \emph{kernels} to infinite dimensional vector spaces and arbitrary sets.
 
-\subsection{Finite-Dimensional Inner Product Spaces}
+\subsubsection{Finite-Dimensional Inner Product Spaces}
 \begin{definition}\label{IP}
   Let $V$ be a (possibly infinite) vector space over $\bbR$. An \emph{inner product} on $V$ is a bilinear map $K : V \times V \to \bbR$
   that is \emph{symmetric} and \emph{positive-definite}. We call the pair $(V,K)$ an \emph{inner product space}.
@@ -75,7 +75,7 @@ This is the main payoff to all this formality: we may view the pair $(\bbR^n, \l
 
 Furthermore, we are justified in dropping the distinction between the formal dot product and inner product; let us denote both by $\langle \cdot, \cdot\rangle$.
 
-\subsection{Generalization: Kernels and Hilbert Spaces}
+\subsubsection{Generalization: Kernels and Hilbert Spaces}
 First, we will need to extend the `similarity measure' from vector spaces $V$ to abstract sets $\mathcal{X}$. In the former, notice that given a basis $\{v_1,\dotsc, v_n\}$, the inner product $K$ is fully determined by the collection of values, $K(v_i,v_j)$, by bilinearity of $K$ (this is equivalent to saying that we can represent the bilinear form $K$ by a matrix of $n\times n$ values $\mathbf{K}$). In some sense, this says that there are only `$n$ ways' or `$n$ directions' in which objects of $V$ may be (dis)similar.
 
 This suggests that we can generalize Definition~\ref{IP} because we didn't need all of $V$ to start with! Suppose someone secretly had an $n$-dimensional inner product space $(V,K)$, but just gave us $n$ linearly independent vectors, say $[n] := \{v_1,\dotsc, v_n\}$, along with the corresponding restriction of the similarity measure $K: [n] \times [n] \to \bbR$.
@@ -122,9 +122,6 @@ The amazing aspect here was that $\mathcal{X}$ was just a set; the only thing we
 \begin{fact}
   The Hilbert space $\mathcal{H}$ induced by $K$ is unique. We call $\mathcal{H}$ the \emph{reproducing kernel Hilbert space (RKHS)} on $\mathcal{X}$ with respect to $K$. (See \cite[Prop 3.3]{P2009}).
 \end{fact}
-
-  
-\subsection{Kernels} % geelon
 
   
 \subsection{Unusual Distance Metrics} % dspeyer
