@@ -36,10 +36,10 @@ Of course, the structure we care about with respect to LSH is \emph{similarity},
 \end{definition}
 Symmetry and positive-definiteness are two of the most obvious requirements for any self-respecting function that calls itself a measure of similarity:
 \begin{enumerate}
-\item  the similarity between two points $x$ and $y$ better not depend on the order we present them to the similarity measure, so we require $K(x,y) = K(y,x)$,
+\item  the similarity between two points $x$ and $y$ better not depend on the order we specify them, so we require $K(x,y) = K(y,x)$,
 \item a nonzero object should be similar to itself, so if $x \ne 0$, then $K(x,x) > 0$.
 \end{enumerate}
-These two intuitions of a `similarity measure' then precisely define the conditions of an inner product on $V$.\footnote{For now, we can just view bilinearity as a necessary condition to ensure that $K$ respects the real numbers as an algebraic object. So, in some sense, bilinearity is not intrisic to $K$; rather, it is a condition \emph{induced} by the field $\bbR$. Later on, when we generalize, we won't have a notion of (bi)linearity on arbitrary sets $\mathcal{X}$; however, there is a natural `completion' of $\mathcal{X}$ as a vector space $\mathcal{H}$. Here, $\bbR$ induces the linear structure.} Allow us to be (perhaps overly) rigorous in the following discussion, for it is better to bore in the finite case than to confuse in the general case.
+These two simple intuitions of a `similarity measure' then precisely define the conditions of an inner product on $V$.\footnote{For now, we can just view bilinearity as a necessary condition to ensure that $K$ respects the real numbers as an algebraic object. So, in some sense, bilinearity is not intrinsic to $K$; rather, it is a condition \emph{induced} by the field $\bbR$. Later on, when we generalize, we won't have a notion of (bi)linearity on arbitrary sets $\mathcal{X}$; however, there is a natural `completion' of $\mathcal{X}$ as a vector space $\mathcal{H}$. Here, $\bbR$ induces the linear structure.} Allow us to be (perhaps overly) rigorous in the following discussion, for it is better to bore in the finite case than to confuse in the general case.
 
 For concreteness, let $V = \bbR^n$ with a fixed basis. With any $x,y \in V$, denote by $\langle x,y\rangle$ the \emph{formal dot product} of $x$ and $y$ as an algebraic construction.\footnote{One point of confusion may be that $\langle \cdot,\cdot \rangle$ often denotes an inner product---usually unproblematic as the dot product is in fact the inner product \emph{induced by the choice of basis} on $V$. However, an abstract vector space has no canonical basis; thus, it has no canonical inner product. In particular, here, the inner product corresponding to the dot product is in general unrelated to the inner product $K$. We will reconcile these two views at Equation~\ref{canonical-inner-prod}, which shows that every inner product corresponds to the dot product in an appropriate basis. Conversely, as every dot product is an inner product, if $V$ is an abstract finite-dimensional real vector space, \emph{specifying an inner product on $V$ is equivalent to specifying a basis on $V$}.} Then, as $K$ is a bilinear form, there exists a matrix $\mathbf{K}$ where
 \begin{equation}\label{kernel-history}
@@ -65,10 +65,10 @@ V \times V\ \  \arrow[dashed, rr, "\Phi \times \Phi"] \arrow[drr, "K"'] & & \bbR
 \end{proposition}
 This is the main payoff to all this formality: we may view the pair $(\bbR^n, \langle\cdot,\cdot\rangle)$ as the canonical $n$-dimensional real inner product space. So, no matter which inner product space $(V,K)$ we want to study, we're in fact guaranteed the existence of an isomorphism $\Phi$ to the familiar inner product space $\bbR^n$, and we may freely interchange the two objects in our minds.
 
-Furthermore, we are justified in dropping the distinction between the formal dot product and inner product; let us denote both by $\langle \cdot, \cdot\rangle$.
+Furthermore, we are now justified in dropping the distinction between the formal dot product and inner product; let us denote both by $\langle \cdot, \cdot\rangle$.
 
 \subsection{Generalization: Kernels and Hilbert Spaces}
-First, we will need to extend the `similarity measure' from vector spaces $V$ to abstract sets $\mathcal{X}$. In the former, notice that given a basis $\{v_1,\dotsc, v_n\}$, the inner product $K$ is fully determined by the collection of values, $K(v_i,v_j)$, by bilinearity of $K$ (this is equivalent to saying that we can represent the bilinear form $K$ by a matrix of $n\times n$ values $\mathbf{K}$). In some sense, this says that there are only `$n$ ways' or `$n$ directions' in which objects of $V$ may be (dis)similar.
+First, we will need to extend the `similarity measure' from vector spaces $V$ to abstract sets $\mathcal{X}$. In the former, notice that given a basis $\{v_1,\dotsc, v_n\}$, the inner product $K$ is fully determined by the collection of values, $K(v_i,v_j)$ where $i,j$ range between 1 and $n$. This follows from bilinearity of $K$; this is equivalent to saying that we can represent the bilinear form $K$ by a matrix of $n\times n$ values $\mathbf{K}$. In some sense, this means that there are only `$n$ ways' or `$n$ directions' in which objects of $V$ may be (dis)similar.
 
 This suggests that we can generalize Definition~\ref{IP} because we didn't need all of $V$ to start with! Suppose someone secretly had an $n$-dimensional inner product space $(V,K)$, but just gave us $n$ linearly independent vectors, say $[n] := \{v_1,\dotsc, v_n\}$, along with the corresponding restriction of the similarity measure $K: [n] \times [n] \to \bbR$.
 
@@ -99,7 +99,7 @@ That is, $f(x) = 0$ for all $x \in \mathcal{X}$. Then, $\langle f, g\rangle$ bet
 \[\langle k_x, f\rangle = \sum_{i=1}^n k_{x_i}(x) = f(x) = 0.\]
 This proves that $V$ admits an inner product that is compatible with $K$ in the sense of Equation~\ref{canonical-inner-prod}. We will in fact go beyond producing an inner product space $V$; we can complete the space with respect to the norm induced by the inner product, producing a \emph{Hilbert space}.
 
-That is, let $\mathcal{H}$ be the completion of $V$ by taking equivalence classes of Cauchy sequences on $V$. We claim that $\mathcal{H} \subset \bbR^\mathcal{X}$ is a collection of functions in the sense that $f(x) < \infty$ for all $f \in \mathcal{H}$ and $x \in \mathcal{X}$.\footnote{Note that in general, it is not the case that the completion of a function space consists of functions. Take any Dirac delta distribution from within $L^2(\bbR)$, for example.} But let us relegate the proof to references, say \cite[Thm 3.16]{P2009}, for it is not particularly enlightening. However, the consequences are quite important.
+That is, let $\mathcal{H}$ be the completion of $V$ by taking equivalence classes of Cauchy sequences on $V$. We claim that $\mathcal{H} \subset \bbR^\mathcal{X}$ is a collection of functions in the sense that $f(x) < \infty$ for all $f \in \mathcal{H}$ and $x \in \mathcal{X}$.\footnote{Note that in general, it is not the case that the completion of a function space consists of functions. Elements of $L^2(\bbR)$, for example, are equivalence classes of functions.} But let us relegate the proof to references, say \cite[Thm 3.16]{P2009}, for it is not particularly enlightening. However, the consequences are quite important.
 
 First of all, we immediately attain the analog to Proposition~\ref{finite-IP}:
 
@@ -112,19 +112,21 @@ First of all, we immediately attain the analog to Proposition~\ref{finite-IP}:
     \]
     where $\langle \cdot, \cdot\rangle_\mathcal{H}$ is the inner product on $\mathcal{H}$.
 \end{proposition}
-It is particularly amazing because $\mathcal{X}$ was just a set; the only thing we needed required was a positive-definite kernel $K$ to obtain $\mathcal{H}$. And in fact:
+This is a powerful result because we may now view $\mathcal{X}$ not as an abstract set, but as vectors within a Hilbert space, which carries with it both algebraic and geometric properties which $\mathcal{X}$ now inherits. It is particularly amazing because the only thing we needed required was a positive-definite kernel $K$ to obtain $\mathcal{H}$. And in fact:
 \begin{fact}
   The Hilbert space $\mathcal{H}$ induced by $K$ is unique. We call $\mathcal{H}$ the \emph{reproducing kernel Hilbert space (RKHS)} on $\mathcal{X}$ with respect to $K$. (See \cite[Prop 3.3]{P2009}).
 \end{fact}
 
-This is a powerful result because we may now view $\mathcal{X}$ not as an abstract set, but as vectors within a Hilbert space, which carries with it both algebraic and geometric properties which $\mathcal{X}$ now inherits.
+Later, we'll see a converse: if $\mathcal{H}$ is an RKHS, so it is a Hilbert space composed of a collection of \emph{functions} over $\mathcal{X}$ (in particular, $L^2(\bbR)$ is not an RKHS), then $\mathcal{H}$ induces a unique kernel $K$ on $\mathcal{X}$. So, analogous to the finite-dimensional case, we can think of $\Phi(\mathcal{X})$ in $\mathcal{H}$ as the `canonical form' of $\mathcal{X}$ with respect to the similary measure $K$.
 
-Despite this, the way we've presented the embedding of $\mathcal{X}$ into $\mathcal{H}$ is somewhat unnatural. While it makes sense to consider the collection of functions $k_x$, the identification of $x$ with $k_x$ may seem \emph{ad hoc}. But if we allow ourselves to borrow some powerful facts from functional analysis, we may obtain a deeper and more natural understanding of RKHS's. Indeed, hopefully we can clarify why we might call $\Phi$ a \emph{feature map}.
 
-\subsection{Feature Map}
-Let us once again consider an abstract set $\mathcal{X}$, and a collection of functions over $\mathcal{X}$, say $\mathcal{H} \subset \bbR^\mathcal{X}$. We may imagine each $f \in \mathcal{H}$ as an observable or a feature, where the value $f(x)$ gives the value after \emph{measuring} the object $x$ with feature $f$.
 
-As a result, every $x \in \mathcal{X}$ is associated to the collection of measurements,
+Despite this, the way we've presented the embedding of $\mathcal{X}$ into $\mathcal{H}$ is somewhat unnatural. While it makes sense to consider the collection of functions $k_x$, the identification of $x$ with $k_x$ may seem \emph{ad hoc}. But if we venture a bit further into functional analysis, we may obtain a clearer understanding of RKHS's. Along the way, hopefully we can clarify why we might call $\Phi$ a \emph{feature map}.
+
+\subsection{Feature Maps}
+Let us once again consider an abstract set $\mathcal{X}$, and a collection of functions over $\mathcal{X}$, say $\mathcal{H} \subset \bbR^\mathcal{X}$. We may imagine each $f \in \mathcal{H}$ as an observable or a feature, where $f(x)$ gives the \emph{measurement} value of the object $x$ by feature $f$.
+
+As a result, every $x \in \mathcal{X}$ is associated to the Cartesian product of measurements,
 \begin{equation}\label{dual}
   x \overset{\Phi}{\mapsto}\prod_{f \in \mathcal{H}} f(x).
 \end{equation}
@@ -134,11 +136,13 @@ Before elaborating on this, let us provide a visual example; perhaps a bit of co
 
 Imagine $\mathcal{X}$ is a set of abstract cats, while $\mathcal{H} = \{f_1,\dotsc, f_n\}$ represents the pixels within the lens of a camera. Given a cat $x$, the value $f_i(x)$ gives the color the $i$th pixel on the camera. Then, the product $\Phi(x)$ in Equation~\ref{dual} represents the \emph{image} of the cat---the collection of colors all the camera pixels see as the camera takes the picture of cat $x$.
 
-Here, it makes sense to call the mapping in Equation~\ref{dual} the \emph{feature map}, for it maps the cat to its features, specifically its colors at specific locations. In general, given any function $f : \mathcal{X} \to \bbR$, we may dually view points of $x$ as functionals, $\mathrm{ev}_x : \mathcal{H} \to \bbR$, where
+Here, it makes sense to call the mapping in Equation~\ref{dual} the \emph{feature map}, for it maps the cat to a collection of features, specifically its colors at different locations. In general, given any function $f : \mathcal{X} \to \bbR$, we may dually view points of $x$ as functionals, $\mathrm{ev}_x : \mathcal{H} \to \bbR$, where
 \[\mathrm{ev}_x(f) := f(x).\]
-In functional analysis, we say that $\mathrm{ev}_x$ is the \emph{evaluation at $x$}, and we view it as an element of the \emph{dual space} $\bbR^\mathcal{H}$ of $\mathcal{H}$, which we denote by $\mathcal{H}^*$.\footnote{Many cases, $\mathcal{H}^*$ will denote the \emph{continuous dual} of $\mathcal{H}$, and not the \emph{algebraic dual}. Indeed, we want to consider the continuous dual here, the collection of continuous functionals on $\mathcal{H}$.} To recapitulate, $\Phi(x) = \mathrm{ev}_x$.
+In functional analysis, we say that $\mathrm{ev}_x$ is the \emph{evaluation at $x$}, and we view it as an element of the \emph{dual space} $\bbR^\mathcal{H}$ of $\mathcal{H}$, which we denote by $\mathcal{H}^*$.\footnote{More precisely, $\mathcal{H}^*$ is the \emph{continuous dual} of $\mathcal{H}$, and not the \emph{algebraic dual}. The former is the collection of continuous functionals on $\mathcal{H}$. The earlier point that $\mathcal{H}$ is a collection of functions over $\mathcal{X}$ is equivalent to saying that the evaluation functionals are continuous.} To recapitulate, $\Phi(x) = \mathrm{ev}_x$.
 
-Return back to kernels as measures of similarity,
+Returning back to kernels as measures of similarity, we can obtain a more subtle understanding of the function $k_x(y) = K(y,x)$. Here, $k_x$ is an observable/feature, corresponding to \emph{how similar is $y$ to $x$}---in some sense, $x$ is `doing the measurement', while $y$ is the object `being measured'. So technically, we should think of $k_x(y)$ as:
+\[k_x(y) \equiv \mathrm{ev}_y(k_x).\]
+
 
 
 
