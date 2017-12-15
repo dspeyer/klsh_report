@@ -508,7 +508,8 @@ The main barrier is that we still don't have the explicit feature map,
 so drawing Gaussians as we usually would is not helpful---we must work
 indirectly through the kernel map.  A secondary barrier is that
 $\cN(0,I)$ is not defined if $\cH$ is infinite-dimensional, but we
-will assume otherwise for now and come back to that.
+will assume finite dimension for now and come back to the infinite
+case later.
 
 The clever solution that \cite{K2012} came up with relies on the central limit theorem. Suppose $\Phi(\cX)$ has mean $\mu$ and covariance $\Sigma$. After drawing $t$ i.i.d. samples, $\Phi(X_1),\dotsc, \Phi(X_t)$, CLT implies that the random variable:
 \[\Sigma^{-1/2} Z := \Sigma^{-1/2} \left(\sqrt{t} \cdot \frac{1}{t} \sum_{i=1}^t \Phi(X_i) - \mu\right)\]
