@@ -255,45 +255,57 @@ where $g$ is drawn according to a Gaussian in $\mathcal{H}$. But here, we run in
 \item if we don't have $\Phi$, how can we compute the inner product of $\Phi(x)$ with $g$?
 \end{enumerate}
 
-Let's examine the first problem and understand why an infinite-dimensional Hilbert space may not
-have a canonical Gaussian distribution---this will actually give us some more intuition on how
-$\Phi$ can embed $\mathcal{X}$ into $\mathcal{H}$. Following this, a natural solution to both
-problems will follow.
+Let's take a closer look at why there is no canonical Gaussian distribution---in fact, this will provide us with some heuristic to think about how $\Phi$ might embed $\cX$ into $\cH$.
 
-\subsection{Infinite-Dimensional Normal Distributions} % geelon
+\subsection{Projection to Finite Dimensions}
 
-\begin{proposition}[{\cite[Example 2.2]{L2012}}] Let $\mathcal{H}$ be a separable Hilbert space.
+\begin{proposition}[{\cite[Example 2.2]{L2012}}] \label{infinite-distribution}Let $\mathcal{H}$ be a separable Hilbert space.
   A Gaussian distribution with covariance $\Sigma$ exists iff, in an appropriate base, $\Sigma$
   has a diagonal form with non-negative eigenvalues, and the sums of these eigenvalues is finite.
 \end{proposition}
 
-In particular, this implies that no analog of the normal distribution $\mathcal{N}(0,I)$ exists in $\cH$ as the trace of $I$ is infinite. Although we won't prove this,\footnote{Additionally, the reader might notice that we have not actually defined what a Gaussian measure on $\cH$ is; we refer the reader to \cite{L2012} for details.} we can give intuition: the normal distribution in $\bbR^n$ is the product of $n$ independent normal Gaussians along $n$ orthogonal directions. As the number of dimensions go to infinity, we would find that the probability distribution would converges to 0 on $\mathcal{H}$.
+In particular, this implies that no analog of the normal distribution $\mathcal{N}(0,I)$ exists in $\cH$ as the trace of $I$ is infinite. Although we won't prove this,\footnote{Additionally, the reader might notice that we have not actually defined what a Gaussian measure on $\cH$ is; we refer the reader to \cite{L2012} for details.} we can give intuition: the normal distribution in $\bbR^n$ is the product of $n$ independent normal Gaussians along $n$ orthogonal directions. As the number of dimensions go to infinity, we would find that the probability distribution would converges to 0 on $\mathcal{H}$. And so any Gaussian that exists on $\mathcal{H}$ must have `most' of its variance concentrated within a finite number of directions.
 
-However, as the above proposition suggests, this is not to say that no Gaussian measures exist in $\cH$. Just that `most' of the variance of a Gaussian distribution will be concentrated within a finite number of directions.
+But this leads to some possible intuition utilized by papers such as \cite{K2012,J2015}, ultimately resulting in the KLSH method. We might ask how is $\Phi(\cX)$ `distributed' within $\cH$?\footnote{This question is not very precise: do we have a measure on $\cX$? Does that induce a measure in $\cH$? Or, is there already a measure on $\cH$, and we assume that $\Phi(\cX)$ is measurable? It might be worth pursing these questions more in the future.} The proposition above therefore suggests that most of the variance of $\Phi(\cX)$ lie on a finite number of dimensions.
 
-So heuristically, if we begin to think about how $\Phi(X)$ may be distributed within $\mathcal{H}$,
+Slightly more precisely we could look at how a large but finite subset $S \subset \cX$ is distributed within $\cH$ (so as to avoid unreliable intuition if $\cX$ is infinite). Let $\Sigma$ be the covariance of $\Phi(S) = \{\Phi(x_1),\dotsc, \Phi(x_m)\}$. For simplicity, let's consider $\Sigma$ in its eigenbasis, so that
+\[\Sigma = \sum_{i=1}^{d_\Phi} \lambda_i v_i \otimes v_i,\]
+where $\lambda_1 \geq \lambda_2 \geq \dotsc \geq 0$ are the eigenvalues and $v_1,v_2,\dotsc$ are the (orthonormal) eigenbasis (by $d_\Phi$, we mean the dimension of $\cH$, which may be infinite). By Proposition~\ref{infinite-distribution}, the sum of the eigenvalues is bounded, so for any $\epsilon > 0$, there is some $N \in \bbN$ such that:
+\[\sum_{i = N}^{d_{\Phi}} \lambda_i < \epsilon.\]
+Thus, if we project $\Phi(x)$ onto the first $N$ eigenbasis (so, truncate $\Phi(x)$ at $N$ coordinates in the covariance eigenbasis):
+\[\pi: \Phi(x) \mapsto \sum_{i=1}^N \langle \Phi(x), v_i\rangle \ v_i, \]
+then the expected truncation error is less than $\epsilon$. This essentially describes \emph{principal component analysis} from within the RKHS (called KPCA).
 
-\newpage 
+If we project $\cH$ into a finite-dimensional vector space by this truncation, then we can follow up with the usual LSH algorithm. At its core, this is how KLSH as created by \cite{K2012} functions. While they did not at first view KLSH as a combination of KPCA and standard LSH at first, their later paper \cite{J2015} showed the equivalence to the intuition we just described. While the intuition is useful, we still need to resolve one more matter: truncated or not, how is $\langle \Phi(x), g\rangle$ computed? We still only have access to $\cH$ through the kernel map $K$. It turns out that this will enough.
+
+\subsection{Using the Kernel}
+
+[NEED TO WRITE]
+
+That is, suppose we had some random variable $X \in \cX$, inducing a random variable $\Phi(X) \in \cH$, with some mean $\mu$ and covariance $\Sigma$. Then, if we drew $t$ samples, $\Phi(X_1),\dotsc, \Phi(X_t)\}$, CLT implies that the random variable
+\[\Sigma^{-1/2} Z := \Sigma^{-1/2} \left(\sqrt{t} \sum_{i=1}^t \Phi(X_i) - \mu\right)\]
+will converge to a standard Gaussian as $t$ approaches $\infty$.
 
 
-Most LSH techniques---including hyperplane carving the unit sphere,
-which will be our first attempt here---require drawing points $g$ from a
-normal distribution.  As we observed, we cannot do this in $\cX$
-because it is undefined, and we cannot do this in $\cH$ because we
-cannot describe any point in $\cH$.
 
-Nevertheless, we can draw points in $\cH$ from a normal distribution,
-and compute their inner products with points of the form $\Phi(x)$.
 
-The key is the central limit theorem.  This theorem states that if you
-draw $n$ points i.i.d. from any distribution and average
-them, the average will approximately be drawn from a normal
-distribution, whose mean is the same as that of the original, and
-whose covariance is that of the original times $\sqrt{n}$.  The
-``approximately'' goes away as $n$ approaches infinity.  In general,
-$n=30$ is sufficient to make a good enough approximation, though the
+
+In general,
+$n=30$ will be sufficient in KLSH to make a good enough approximation, though the
 theoretical bound is poorly studied, and extremely multimodal
-distributions might require larger $n$s.
+distributions might require larger values of $n$.
+
+
+
+
+Let $z$ be a realization of $Z$. Then, it follows that we could ball-carve using the hash:
+\[h(x) = \sign \ \left\langle \Phi(x), \Sigma^{-1/2}z\right\rangle.\]
+Let's examine the term $\left\langle \Phi(x), \Sigma^{-1/2}z\right\rangle$ in the eigenbasis of $\Sigma$, where $\Sigma$ has eigenvalues $\lambda_1 \geq \lambda_2\geq \dotsc \geq 0$ and eigenvalues $v_1,v_2,\dotsc$. Then, 
+
+
+
+
+
 
 If we select a random point $x$ from our database (equal chance of
 each point) and consider its $\Phi(x)$, this is a distribution in
@@ -327,17 +339,7 @@ inner products:
 %%   & = & \frac{1}{n} \Sigma^{-1/2} \sum_j \left( \sum_i^n \langle \Phi(x_i),v_j \rangle \right ) v_j \\
 %%   & = & \frac{1}{n} \sum_j \lambda_j \left( \sum_i^n \langle \Phi(x_i),v_j \rangle \right ) v_j \\
 
-\subsection{Approximating the Covariance} % geelon
-
-\subsubsection{Interpretation as Projection} % geelon
-
-\subsubsection{Points to be Dropped} % dspeyer
-
-\section{Tweaking Parameters} % geelon
-
-\subsection{Numbers of Points}
-
-\subsection{Number of Eigenvectors}
+\subsection{Analysis of Algorithm}
 
 \section{Data-Dependent KLSH} % dspeyer
 
