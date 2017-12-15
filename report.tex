@@ -71,9 +71,15 @@ problems.
 
 \section{Kernels} % geelon
 
-One of the most natural ways to encode structure into an abstract set $\mathcal{X}$ is to provide a mapping  from that set to the reals, $\mathcal{X} \to \bbR$. Or more generally, a mapping to some structure-rich mathematical object. Indeed, at a high level, we can consider different mathematical objects as the `canonical' idealization of certain types of structure; then, certain functions from $\mathcal{X}$ to these objects allow us to `pull back' or instantiate that structure within our specific $\mathcal{X}$.
+In this section, we will motivate and describe the theory of kernel methods. We often develop mathematics and algorithms for objects that explicitly encode a lot of structure. For example, LSH has been developed for Hamming spaces, finite-dimensional vector spaces, $n$-spheres, and so on. These objects are particularly well-suited for analysis, as the very way we \emph{represent} them directly showcases their \emph{properties}. It is often the harmony between representation and structure that enables elegance and empowers analysis.
 
-Of course, the structure we care about with respect to LSH is \emph{similarity}, one idealization of which is the \emph{(real) inner product}. Let us take a moment to reexamine the inner product on finite real vector spaces as a notion of similarity, before generalizing that notion using \emph{kernels} to infinite dimensional vector spaces and arbitrary sets.
+But we can't expect harmony always. Nonetheless, might we be able to extend these methods to objects that have implicit structure?
+
+Kernel methods are one way of approaching such situations. Let $\cX$ be our object---just an abstract set. But perhaps it has implicit structure. How might we access this structure? Very naturally, we might encode this structure into a mapping from that abstract set to a structure-rich mathematical object.
+
+We often do this without thinking, for example, assigning numbers to objects in order to compare them---a mapping of the form $\mathcal{X} \to \bbR$. Indeed, at a high level, we can consider different mathematical objects as the `canonical' idealization of certain types of structure; then, functions from $\mathcal{X}$ to these objects allow us to `pull back' or instantiate that structure within our specific $\mathcal{X}$.
+
+Of course, the structure we care about with respect to LSH is \emph{similarity}, one idealization of which is the \emph{(real) inner product}. In fact, with kernel methods, we will be able to tightly bind any abstract object with the right notion of similarity to an inner product space, and this will give us both new insight and new algorithms. Let us take a moment to reexamine the inner product on finite real vector spaces as a notion of similarity, before generalizing that notion using \emph{kernels} to infinite dimensional vector spaces and arbitrary sets.
 
 \subsection{Finite-Dimensional Inner Product Spaces}
 \begin{definition}\label{IP}
@@ -255,7 +261,7 @@ where $g$ is drawn according to a Gaussian in $\mathcal{H}$. But here, we run in
 \item if we don't have $\Phi$, how can we compute the inner product of $\Phi(x)$ with $g$?
 \end{enumerate}
 
-Let's take a closer look at why there is no canonical Gaussian distribution---in fact, this will provide us with some heuristic to think about how $\Phi$ might embed $\cX$ into $\cH$.
+Let's take a closer look at why there is no canonical Gaussian distribution---in fact, this will provide us with some heuristic to think about how $\Phi$ might embed $\cX$ into $\cH$. From that insight, we will be able to reduce the infinite-dimensional problem down to a finite-dimensional one, which we essentially already know how to solve.
 
 \subsection{Projection to Finite Dimensions}
 
@@ -274,9 +280,9 @@ where $\lambda_1 \geq \lambda_2 \geq \dotsc \geq 0$ are the eigenvalues and $v_1
 \[\sum_{i = N}^{d_{\Phi}} \lambda_i < \epsilon.\]
 Thus, if we project $\Phi(x)$ onto the first $N$ eigenbasis (so, truncate $\Phi(x)$ at $N$ coordinates in the covariance eigenbasis):
 \[\pi: \Phi(x) \mapsto \sum_{i=1}^N \langle \Phi(x), v_i\rangle \ v_i, \]
-then the expected truncation error is less than $\epsilon$. This essentially describes \emph{principal component analysis} from within the RKHS (called KPCA).
+then the expected truncation error will be less than $\epsilon$. This essentially describes \emph{principal component analysis} from within the RKHS (this is called KPCA).
 
-If we project $\cH$ into a finite-dimensional vector space by this truncation, then we can follow up with the usual LSH algorithm. At its core, this is how KLSH as created by \cite{K2012} functions. While they did not at first view KLSH as a combination of KPCA and standard LSH at first, their later paper \cite{J2015} showed the equivalence to the intuition we just described. While the intuition is useful, we still need to resolve one more matter: truncated or not, how is $\langle \Phi(x), g\rangle$ computed? We still only have access to $\cH$ through the kernel map $K$. It turns out that this will enough.
+If we project $\cH$ into a finite-dimensional vector space by this truncation, then we can follow up with the usual LSH algorithm. At its core, this is how KLSH works, as described in \cite{K2012}. Interestingly enough, while they did not at first view KLSH as a combination of KPCA and standard LSH at first, their later paper \cite{J2015} proved the equivalence of their original method to KPCA+LSH. While the intuition is useful, we still need to resolve one more matter: truncated or not, how is $\langle \Phi(x), g\rangle$ computed? We still only have access to $\cH$ through the kernel map $K$. It turns out that this will enough.
 
 \subsection{Using the Kernel}
 
