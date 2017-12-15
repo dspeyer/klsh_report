@@ -24,7 +24,18 @@
 
 %\begin{multicols}{2}
 
-\section{LSH} % dspeyer
+\section{Introduction}
+
+Suppose we wish to search flickr for images similar to an uploaded image,
+or NCBI's database for bacteria similar to the one found in our
+patient's throat.  We will need a rather unusual sort of database to
+do this with any efficiency.
+
+We will need to use locality specific hashing with an appropriate
+similarity function combined by kernel methods.  Let us begin by
+considering each of these requirements one at a time.
+
+\subsection{LSH} % dspeyer
 
 Locality sensitive hashing is a general solution for searches in which
 the desired key is near or nearest to the query, rather than equal.
@@ -69,7 +80,7 @@ problems.
 
 %TODO: Write about efficiency
 
-\section{Kernels} % geelon
+\subsection{Kernels} % geelon
 
 In this section, we will motivate and describe the theory of kernel methods. We often develop mathematics and algorithms for objects that explicitly encode a lot of structure. For example, LSH has been developed for Hamming spaces, finite-dimensional vector spaces, $n$-spheres, and so on. These objects are particularly well-suited for analysis, as the very way we \emph{represent} them directly showcases their \emph{properties}. Often, the harmony between representation and structure empowers analysis and enables elegance.
 
@@ -81,7 +92,7 @@ We often do this without thinking, for example, assigning numbers to objects in 
 
 Of course, the structure we care about with respect to LSH is \emph{similarity}, one idealization of which is the \emph{(real) inner product}. In fact, with kernel methods, we will be able to tightly bind any abstract object to an inner product space, provided the object has the right notion of similarity. This will provde us both new insight and new algorithms. Let us take a moment to reexamine the inner product on finite-dimensional real vector spaces, before generalizing to infinite-dimensional vector spaces and arbitrary sets.
 
-\subsection{Finite-Dimensional Inner Product Spaces}
+\subsubsection{Finite-Dimensional Inner Product Spaces}
 \begin{definition}\label{IP}
   Let $V$ be a (possibly infinite) vector space over $\bbR$. An \emph{inner product} on $V$ is a bilinear map $K : V \times V \to \bbR$
   that is \emph{symmetric} and \emph{positive-definite}. We call the pair $(V,K)$ an \emph{inner product space}.
@@ -121,7 +132,7 @@ This is the main payoff to all this formality: we may view the pair $(\bbR^n, \l
 
 Furthermore, we are now justified in dropping the distinction between the formal dot product and inner product; let us denote both by $\langle \cdot, \cdot\rangle$.
 
-\subsection{Generalization: Kernels and Hilbert Spaces}
+\subsubsection{Generalization: Kernels and Hilbert Spaces}
 First, we will need to extend the `similarity measure' from vector spaces $V$ to abstract sets $\mathcal{X}$. In the former, notice that given a basis $\{v_1,\dotsc, v_n\}$, the inner product $K$ is fully determined by the collection of values $K(v_i,v_j)$, where $i,j$ range between 1 and $n$. This follows from bilinearity of $K$ and is equivalent to saying that we can represent the bilinear form $K$ by a matrix of $n\times n$ values $\mathbf{K}$. In some sense, this means that there are only `$n$ ways' or `$n$ directions' in which objects of $V$ may be (dis)similar.
 
 This suggests that we can generalize the definition of inner products because we didn't need all of $V$ to start with! Suppose someone secretly had an $n$-dimensional inner product space $(V,K)$, but just gave us $n$ linearly independent vectors, say $[n] := \{v_1,\dotsc, v_n\}$, along with the corresponding restriction of the similarity measure $K: [n] \times [n] \to \bbR$.
@@ -177,7 +188,7 @@ Later, we'll see a characterization: if $\mathcal{H}$ is an RKHS, then $\mathcal
 
 Despite this, the way we've presented the embedding of $\mathcal{X}$ into $\mathcal{H}$ is somewhat unnatural. While it makes sense to consider the collection of functions $k_x$, the identification of $x$ with $k_x$ may seem \emph{ad hoc}. But if we venture a bit further into functional analysis, we may obtain a clearer understanding of RKHS's. Along the way, hopefully we can clarify why we might call this identification a feature map.
 
-\subsection{Feature Maps}
+\subsubsection{Feature Maps}
 Let us once again consider an abstract set $\mathcal{X}$, and a collection of functions over $\mathcal{X}$, say $\mathcal{H} \subset \bbR^\mathcal{X}$. We may imagine each $f \in \mathcal{H}$ as an observable or a feature, where $f(x)$ gives the \emph{measured value} of the object $x$ by feature $f$.
 
 As a result, every $x \in \mathcal{X}$ is associated to the Cartesian product of measurements,
@@ -211,14 +222,14 @@ Now, as vectors in a Hilbert space, the points $k_x$ inherits the similarity mea
 \[K(x,y) = \langle k_y, k_x\rangle_\mathcal{H}.\]
 We call $K$ the \emph{reproducing kernel of $\mathcal{H}$}, for $\mathcal{H}$ uniquely determines $K$. Recalling from before---every kernel $K$ uniquely determines an $\mathcal{H}$---we now see that these two views of RKHS's we've provided are equivalent. And whenever we are given a set $\mathcal{X}$ with a positive-definite kernel, we can reason as though we know that they belong to a Hilbert space $\mathcal{H}$.
 
-\subsection{In Practice}
+\subsubsection{In Practice}
 In many cases, one important limitation is the infeasibility of constructing $\Phi$. And especially in a computational setting, if $\mathcal{H}$ is infinite dimensions, representation of its vectors becomes even more problematic.
 
 Still, we can still take advantage of the existence of $\Phi$; sometimes we can reason about properties of $\mathcal{X}$ as points in $\mathcal{H}$, but pull the analysis back through $K$.
 
 In the rest of the paper, we'll look at how this may be done for LSH.
 
-\section{Similarity Metrics, Unusual and Usual} % dspeyer 
+\subsection{Similarity Metrics, Unusual and Usual} % dspeyer 
   
 LSH generally applies to distance metrics, hence the inequalities
 discussing $||x_1-x_2||$.  Kernels generally apply to similarity
