@@ -61,8 +61,8 @@
 %\renewcommand{\cite}[2][]{[#2]}
 \def\beginrefs{\begin{list}%
         {[\arabic{equation}]}{\usecounter{equation}
-         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
-         \setlength{\labelwidth}{1.6truecm}}}
+         \setlength{\leftmargin}{2.7truecm}\setlength{\labelsep}{0.4truecm}%
+         \setlength{\labelwidth}{3.0truecm}}}
 \def\endrefs{\end{list}}
 \def\bibentry#1{\item[\hbox{[#1]}]}
 
