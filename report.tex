@@ -217,17 +217,73 @@ In many cases, one important limitation is the infeasibility of constructing $\P
 Still, we can still take advantage of the existence of $\Phi$; sometimes we can reason about properties of $\mathcal{X}$ as points in $\mathcal{H}$, but pull the analysis back through $K$.
 
 In the rest of the paper, we'll look at how this may be done for LSH.
-\section{Similarity Metrics, Unusual and Usual} % dspeyer
+
+\section{Similarity Metrics, Unusual and Usual} % dspeyer 
   
+LSH generally applies to distance metrics, hence the inequalities
+discussing $||x_1-x_2||$.  Kernels generally apply to similarity
+metrics.  How do we combine these ideas?
+
+The simplest case is when the data is already on a sphere in $bbR^n$
+with $\ell_2$ distance.  In this case, $||x_1-x_2||=\sqrt{\langle
+  x_1-x_2, x_1-x_2 \rangle}=\sqrt{\langle x_1,x_1 \rangle+\langle
+  x_2,x_2 \rangle - 2 \langle x_1,x_2 \rangle} = \sqrt{2(1-\langle
+  x_1,x_2 \rangle)}$.  In this case, saying $||x_1-x_2||<r$ as we did
+in our original inequality is equivalent to saying $\langle x_1,x_2
+\rangle > 1-r^2/2$.  This means the $c$ term becomes squared, which
+works to our benefit when constructing an Approximate Nearest Neighbor
+algorithm.
+
+Not every distance metric can be converted into a similarity metric as
+cleanly.  If $\ell_1$ distance could be converted into a similarity
+metric and thence to an $\ell_2$ distance without sacrificing cr-near
+properties, such a transform could be used to perform cr-near neighbor
+searches with $\rho$ comparable to $\ell_2$ cr-nn, but this has been
+proven impossible [TODO: cite].
+
+One can convert a distance to a similarity using general formulas such
+as $k(x,y)=1-d(x,y)^2/\max(d)^2$ (analogous to the unit sphere) or
+$k(x,y)=\exp(-d(x,y))$ (if we wish to operate elegantly without
+needing to find the maximum distance), but these are not guaranteed to
+have nice cr-nn properties.
+
+Often it is better to construct a new metric.  For example, the usual
+distance metric in genetic sequences is string-edit distance, usually
+with indels costing twice as much as changes.  This is too similar to
+$\ell_1$ to likely permit a good conversion.  However, one can also
+count k-mer frequency and take a normalized inner product (or, for
+longer k-mers, Hamming distance subtracted from $4^k$).  These are
+proper similarity metrics which predict evolutionary homology and
+analogy of function almost as well as string edit distance [TODO:
+  cite].  The true test of similarity metric quality is an empirical
+one.
+
+Similarly in images, you can describe distance as the length of the
+series of edits to transform one image into the other (where each step
+is artistically simple), but this is often not the best predictor of
+human-judged similarity.  A more popular technique is to extract a set
+of features by convolution with random Gaussian or sinusoidal filters
+and use some form of normalized inner product.
+
+For a more general solution, one could train a deep neural net on
+pairs of objects that are and are not ``essentially'' the same.  The
+final output would be a probability that they are.  A logistic forcing
+function would guarantee positive-definiteness, and adding all pairs
+of training data in both directions would guarantee symmetry.
+
+In general, any similarity metric that seems intuitively correct or
+that correlates well to any practical purpose is likely to be
+positive-definite and symmetric, and therefore a valid kernel.
+
 \section{KLSH}
 
 Now we are ready to put the pieces together into KLSH.  Suppose we
 have a set of objects $\cX$ on which the only defined function is a
 simularity metric $K:\cX \times \cX \rightarrow [0,1]$ (with
 $K(x,x)=1$).  In the most
-common example, $\cX$ is a collection of images and $K$ is whatever kernel the computer
-vision community recommends.  And let us suppose we know $K$ to be
-positive-definite.
+common example, $\cX$ is a collection of images and $K$ is whatever
+kernel the computer
+vision community recommends.
 
 Note that $\cX$ is \emph{not} generally a vector space.  We cannot add two
 images, nor take their inner product.  We cannot generate a random
@@ -240,7 +296,43 @@ maps into.
 Nevertheless, we would like to apply LSH techniques that are defined
 in the kernel space to search problems in the object space.
 
-\subsection{LSH on the Sphere} %dspeyer
+Specifically, we will start by applying LSH of the unit sphere (which
+is where we are, by the $K(x,x)=1$ definition earlier) by hyperplane
+carving.
+
+\subsection{Hyperplane Carving}
+
+The simplest way to do LSH on a unit sphere in $\bbR^n$ with inner
+product similarity is to carve the sphere in half with a random
+hyperplane.  This is equivalent to taking a vector perpendicular to
+that hyperplane (traditionally called $g$) and taking the sign of its
+inner product with the vector in question.  The vector $g$ must be
+drawn at random from a spherical Gaussian distribution.  This means
+that regardless of $x_1$ and $x_2$, whether $h(x_1)=h(x_2)$  is
+determined by whether $g$ falls into the region which makes it so,
+where the size of that region is determined by $\langle x_1,x_2
+\rangle$.
+
+
+%% \subsection{Normal Distributions in RKHS} % dspeyer
+
+%% The hyperplane carving technique requires drawing points $g$ from a
+%% normal distribution.  As we observed, we cannot do this in $\cX$
+%% because it is undefined, and we cannot do this in $\cH$ because we
+%% cannot describe any point in $\cH$.
+
+%% Nevertheless, we can draw points in $\cH$ from a normal distribution,
+%% and compute their inner products with points of the form $\Phi(x)$.
+
+%% The key is the central limit theorem.  This theorem states that if you
+%% draw $n$ points i.i.d. from any distribution and average
+%% them, the average will approximately be drawn from a normal
+%% distribution, whose mean is the same as that of the original, and
+%% whose covariance is that of the original times $\sqrt{n}$.  The
+%% ``approximately'' goes away as $n$ approaches infinity.  In general,
+%% $n=30$ is sufficient to make a good enough approximation, though the
+
+
 
 \subsection{Attempt at KLSH} % geelon
 Let's try to kernelize the ball-carving LSH method. Given $\mathcal{X}$ and a
@@ -359,13 +451,73 @@ technique achieves $\rho=1/(2c^2-1)$.  This is better than the
 theoretical limit and is made possible by basing the hashing functions
 on the data.
 
+The first step is to replace the hyperplane-carving hash function with
+a cap-carving one.  Instead of checking the sign of $\langle g, q
+\rangle$, we test if it is greater than $d^{1/4}$.  And
+instead of simply reporting ``no'' if not, we keep picking $g$s
+according to some deterministic psuedorandom rule until we find one
+that is.
+
+If the data is spread evenly over the sphere, then we expect a very
+small fraction of points in each cap.  To speak somewhat imprecisely,
+the inner product is the sum of the product in each co-ordinate.  Each
+of those products has expected value zero (by symmetry) and a very
+small variance (because of the cap on the total length).  Summing many
+of them drives the variance down further and allows us to apply a
+Chernoff bound.
+
+The low fraction of points means that if a query and a database point
+are in the same cap, it's probably because they're close to one
+another.  Note that we are assuming the data is sparse compared to
+the possibility space.
+
+This allows us to get $\rho=1/(2c^2-1)$, but only if the data is
+random or close to random.
+
 \subsubsection{Approximate Evenness}
 
+What we mean by ``close to random'' is that no cap exceeds its
+expected number of points by more than a constant factor.
 
+This is not something we are likely to have.  First, a $[0,1]$-ranged
+similarity function will map all points into the ``upper right''
+orthant.  More worryingly, we can expect any real-world data to be
+extremely clumpy.
+
+It is possible to extract a reasonable number of ``lumps'' and leave
+an approximately even residue by taking a small number of test points
+from the dataset, computing their similarities to all other points and
+noticing if any are close to many.  This is a slightly superlinear
+time preperatory step that tells us about troublesome balls centered
+on known datapoints.
+
+The standard technique is then to remove those balls and process them
+separately, by ignoring their sphere-segment structure and slicing
+them into new spheres.  While complex, the operation is
+time-efficient.  Unfortunately, the process of sphere-slicing a ball
+likely would not be possible in kernel space.
 
 \subsection{Smaller Caps}
 
-\subsection{Making the Calculations}
+What might be possible would be to first carve the dense regions with
+smaller caps, then the rest of the ball with regular size ones.  If we
+increase the threshold on $\langle g,q \rangle$ to decrease the
+diameter of the cap proportionally to the diameter of the ball, this
+should get us something close to the correct number of points.  
+
+It may still be necessary to recurse on dense regions inside dense
+regions, but no more so than in the original algorithm.
+
+Unlike sphere carving, this should be possible to implement in kernel
+space.  The points can be drawn by taking the center (a point in the
+database!), adding a normal vector resized to the ball's radius, and
+normalizing the result.  These operations are straightforward to
+reduce to computable kernel operations.
+
+We don't have space to fully develop this idea, which we have neither
+proved nor tested empirically.  But, from everything we can see, there
+have been no attempts to combine kernelized and data-dependent LSH, so
+we are optimistic about this approach.
 
 \section{References}
 \beginrefs
