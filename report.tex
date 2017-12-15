@@ -75,10 +75,14 @@ we can widen the gap by taking $n$ functions and concatenating their
 outputs (getting $p_1^n$ and $p_2^n$).  We can then deal with too low
 a $p_1^n$ by taking $m$ repetitions and searching all of them (getting
 $mp_1^n$ and $mp_2^n$).  This solves the cr-near problem with
-arbitrarily high probability, which can in turn solve other, similar
-problems.
+arbitrarily high probability.
 
-%TODO: Write about efficiency
+Once we have the cr-nn problem solved, we can use that to solve the
+Aproximate Nearest Neighbor problem: finding a point in our database
+no more than $c$ times farther from the query than the closest point.
+The efficiency of this search is $O(n^\rho)$ [TODO: check this] where
+$\rho=\log(1/p_1)/\log(1/p_2)$ and is bounded by a function of $c$.
+For $\bbR^n$ and $\ell_2$, $\rho>1/c^2$. [TODO: check and find citation]
 
 \subsection{Kernels} % geelon
 
