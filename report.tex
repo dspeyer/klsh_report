@@ -502,30 +502,13 @@ where $g$ is drawn according to a Gaussian in $\mathcal{H}$. But here, we run in
 
 Let's take a closer look at why there is no canonical Gaussian distribution---in fact, this will provide us with some heuristic to think about how $\Phi$ might embed $\cX$ into $\cH$. From that insight, we will be able to reduce the infinite-dimensional problem down to a finite-dimensional one, which we essentially already know how to solve.
 
-\subsection{Projection to Finite Dimensions}
-
-\begin{proposition}[{\cite[Example 2.2]{L2012}}] \label{infinite-distribution}Let $\mathcal{H}$ be a separable Hilbert space.
-  A Gaussian distribution with covariance $\Sigma$ exists iff, in an appropriate base, $\Sigma$
-  has a diagonal form with non-negative eigenvalues, and the sums of these eigenvalues is finite.
-\end{proposition}
-
-In particular, this implies that no analog of the normal distribution $\mathcal{N}(0,I)$ exists in $\cH$ as the trace of $I$ is infinite. Although we won't prove this,\footnote{Additionally, the reader might notice that we have not actually defined what a Gaussian measure on $\cH$ is; we refer the reader to \cite{L2012} for details.} we can give intuition: the normal distribution in $\bbR^n$ is the product of $n$ independent normal Gaussians along $n$ orthogonal directions. As the number of dimensions go to infinity, we would find that the probability distribution would converges to 0 on $\mathcal{H}$. And so any Gaussian that exists on $\mathcal{H}$ must have `most' of its variance concentrated within a finite number of directions.
-
-But this leads to some possible intuition utilized by papers such as \cite{K2012,J2015}, ultimately resulting in the KLSH method. We might ask how is $\Phi(\cX)$ `distributed' within $\cH$? The proposition above therefore suggests that most of the variance of $\Phi(\cX)$ lie on a finite number of dimensions. Let $\Sigma$ be the covariance of $\Phi(\cX)$.\footnote{`How $\Phi(\cX)$ is distributed' and the `covariance' of $\Phi(\cX)$ are perhaps not very well-defined. Do we have a measure on $\cX$? Does that induce a measure in $\cH$? Is $\Phi(\cX)$ measurable? If we want to be more rigorous, we can argue that we approximate $\Phi(\cX)$ by a large, but finite, sample $\Phi(S) = \Phi(\{x_1,\dotsc, x_N\})$.} For simplicity, let's consider $\Sigma$ in its eigenbasis, so that
-\[\Sigma = \sum_{i=1}^{d_\Phi} \lambda_i v_i \otimes v_i,\]
-where $\lambda_1 \geq \lambda_2 \geq \dotsc \geq 0$ are the eigenvalues and $v_1,v_2,\dotsc$ are the (orthonormal) eigenbasis (by $d_\Phi$, we mean the dimension of $\cH$, which may be infinite). By Proposition~\ref{infinite-distribution}, the sum of the eigenvalues is bounded, so for any $\epsilon > 0$, there is some $N \in \bbN$ such that:
-\[\sum_{i = N}^{d_{\Phi}} \lambda_i < \epsilon.\]
-Thus, if we project $\Phi(x)$ onto the first $N$ eigenbasis (so, truncate $\Phi(x)$ at $N$ coordinates in the covariance eigenbasis):
-\[\pi: \Phi(x) \mapsto \sum_{i=1}^N \langle \Phi(x), v_i\rangle \ v_i, \]
-then the expected truncation error will be less than $\epsilon$. This essentially describes \emph{principal component analysis} from within the RKHS (this projection is called kernel PCA or KPCA).
-
-We can therefore simplify the problem if we project $\cH$ into a finite-dimensional vector space by this truncation. Then, conceptually, it is a simple matter of following up with the usual LSH algorithm. In fact, at its core, this is how KLSH works, as described in \cite{K2012}. Interestingly enough, while they did not at first view KLSH as a combination of KPCA and standard LSH at first, their later paper \cite{J2015} proved the equivalence of their original method to KPCA+LSH.
-
-While the intuition is useful, we still need to resolve one more matter: truncated or not, how is $\langle \Phi(x), g\rangle$ computed? We still only have access to $\cH$ through the kernel map $K$. It turns out that this will enough.
-
 \subsection{Using the Kernel}
 
-The main barrier, even if we project $\Phi(x)$ into a finite-dimensional space $\pi(\cH)$, is that we still don't have the explicit feature map, so drawing Gaussians as we usually would is not helpful---we must work indirectly through the kernel map.
+The main barrier is that we still don't have the explicit feature map,
+so drawing Gaussians as we usually would is not helpful---we must work
+indirectly through the kernel map.  A secondary barrier is that
+$\cN(0,I)$ is not defined if $\cH$ is infinite-dimensional, but we
+will assume otherwise for now and come back to that.
 
 The clever solution that \cite{K2012} came up with relies on the central limit theorem. Suppose $\Phi(\cX)$ has mean $\mu$ and covariance $\Sigma$. After drawing $t$ i.i.d. samples, $\Phi(X_1),\dotsc, \Phi(X_t)$, CLT implies that the random variable:
 \[\Sigma^{-1/2} Z := \Sigma^{-1/2} \left(\sqrt{t} \cdot \frac{1}{t} \sum_{i=1}^t \Phi(X_i) - \mu\right)\]
@@ -537,17 +520,33 @@ Let's examine the term $\left\langle \Phi(x), \Sigma^{-1/2}z\right\rangle$; as b
 \begin{align*}
   \langle \Phi(x), \Sigma^{-1/2} z\rangle &= \sum_{i=1}^{d_\Phi} \frac{1}{\sqrt{\lambda_i}} \langle \Phi(x), v_i\rangle \langle v_i , z\rangle.
 \end{align*}
-And of course, the truncated version would replace $d_\Phi$ with $N$, however many finite terms to take. Instead of computing $\Sigma$ then truncating to $N$ dimensions (which may be impossible anyways), we could just estimate $\Sigma$ using $N$ samples from $\Phi(\cX)$.
 
-In other words, we approximate $\cX$ using a large, but finite, sample $S = \{x_1,\dotsc, x_N\}$, then argue as before, on $S$ instead of $\cX$---$z$ is constructed from $t$ samples in $S$ and not $\cX$. In fact, this approximation step puts us on surer theoretical footing (as we never resolved questions of measurability or distribution of $\cX$ in $\cH$ if $\cX$ is infinite). And since our sample has $N$ points, the covariance $\Sigma_S$ will have at most $N$ nonzero eigenvalues.
-
-Because $\Sigma_S$ and $z$ are all defined in terms of points in $\cX$, and we use them in expressions involving just their inner products, we might be optimistic to find an expression for $h(x)$ using only the kernel mapping. And after some algebra, \cite{K2012} showed just that:
+We still can't quite compute this because we don't have the $\lambda$s
+and $d_\Phi$ might be infinite.  So we truncate the operation to $N$
+eigenvalues, making a finite sum regardless of $\cH$.  These
+eigenvalues can be approximated using a size $N$ random sample $S$ from
+$\Phi(\cX)$ by taking the kernel matrix for the sample and
+manipulating it \cite{something}.  This both resolves our foundational
+concerns about defined gaussians and gives us a formula we can
+compute, specifically \cite{K2012}:
 \begin{align}
   h(x) &= \sign \ \langle \Phi(x), \Sigma_S^{-1/2} z\rangle \nonumber\\ 
   &= \sign\left(\sum_{i=1}^t w_i \cdot K(x_i, x)\right),\
 \end{align}
 where $w = \hat{K}^{-1/2}\mathbbm{1}_S$, $\hat{K}$ is the centered kernel matrix for $S$, and $\mathbbm{1}_S$ just the indicator vector for the sample $S$ in $\cX$. By randomly choosing different subcollections of $t$ points from within $S$, we obtain our family of random hashes for our arbitrary set $\cX$.
 
+We have dropped terms, specifically $\sum_{i=N+1}^{d_\Phi}
+\frac{1}{\sqrt{\lambda_i}} \langle \Phi(x), v_i\rangle \langle v_i ,
+z\rangle$.  Informally, we can say the resultant error is bounded by
+$\lambda_{N+1}$, because if some combination of later terms exceeded
+it, that would be the new $v_{N+1}$.  Since $\lambda_{N+1}<\lambda_N$
+which we have, we can bound the error as we go.  If the error is
+unacceptably large, we can increase $N$ and re-compute.  For a formal
+treatment, see \cite{J2015}'s supplemental materials.
+
+Conceptually, we are taking the first $N$ principle components of
+$\Phi(\cX)$ to serve as an approximation, and for this reason the
+technique is sometimes called ``KPCA''.
 
 \section{Data-Dependent KLSH} % dspeyer
 
