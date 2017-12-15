@@ -20,6 +20,13 @@
 \maketitle
 
 \begin{abstract}
+  In this paper, we consider the motivation and theory behind kernel
+  methods, as we seek to describe some insight and intuition as to how
+  one might \emph{kernelize} existing algorithms. We ground our discussion
+  by focusing on locality-sensitive hashing (LSH)---we examine the
+  obstacles to kernelizing LSH and describe the steps one can take to
+  overcome them. Finally, we suggest possible directions future research
+  might find interesting to pursue.
 \end{abstract}
 
 %\begin{multicols}{2}
@@ -418,15 +425,6 @@ Because $\Sigma_S$ and $z$ are all defined in terms of points in $\cX$, and we u
 where $w = \hat{K}^{-1/2}\mathbbm{1}_S$, $\hat{K}$ is the centered kernel matrix for $S$, and $\mathbbm{1}_S$ just the indicator vector for the sample $S$ in $\cX$. By randomly choosing different subcollections of $t$ points from within $S$, we obtain our family of random hashes for our arbitrary set $\cX$.
 
 
-
-%% We can then take an eigen decomposition of $\Sigma^{-1/2}$ into vectors $v_j$ and values $\lambda_j$ and use this basis to describe $\Phi(x)=\sum_j \langle x,v_j \rangle v_j$.  Once we've described the average in the eigenbasis, we can regard the covariance multiplication as applying the eigenvalues.  From there, it's just a matter of changing the order of summation:
-
-%% \begin{eqnarray*}
-%%   \Sigma^{-1/2}\left(\frac{1}{n}\sum_i^n \Phi(x_i) \right)
-%%   & = & \Sigma^{-1/2}\frac{1}{n}\sum_i^n \sum_j \langle \Phi(x_i),v_j \rangle v_j \\
-%%   & = & \frac{1}{n} \Sigma^{-1/2} \sum_j \left( \sum_i^n \langle \Phi(x_i),v_j \rangle \right ) v_j \\
-%%   & = & \frac{1}{n} \sum_j \lambda_j \left( \sum_i^n \langle \Phi(x_i),v_j \rangle \right ) v_j \\
-
 \section{Data-Dependent KLSH} % dspeyer
 
 \subsection{Data-Dependent LSH}
@@ -505,7 +503,7 @@ proved nor tested empirically.  But, from everything we can see, there
 have been no attempts to combine kernelized and data-dependent LSH, so
 we are optimistic about this approach.
 
-\section{References}
+\section*{References}
 \beginrefs
 
 \bibentry{A1950} Aronszajn, Nachman. \emph{Theory of reproducing kernels}. Transactions of the American mathematical society 68.3 (1950): 337-404.
