@@ -22,7 +22,7 @@
 \begin{abstract}
 \end{abstract}
 
-\begin{multicols}{2}
+%\begin{multicols}{2}
 
 \section{LSH} % dspeyer
 
@@ -101,7 +101,7 @@ We deduce that there exists a linear map $\Phi: V \to \bbR^n$ (spoiler: we call 
 \end{equation}
 In other (ridiculously abstract) words, Equation~\ref{canonical-inner-prod} precisely says:
 \begin{proposition}\label{finite-IP}
-  Let $V$ be an $n$-dimensional real vector space. If $K : V \times V \to \bbR$ is an inner product, then there exists a map $\Phi: V \to \bbR^n$ such that the following map commutes:
+  Let $V$ be an $n$-dimensional real vector space. If $K : V \times V \to \bbR$ is an inner product, then there exists a map $\Phi: V \to \bbR^n$ such that the following diagram commutes:
   \[\begin{tikzcd}
 V \times V\ \  \arrow[dashed, rr, "\Phi \times \Phi"] \arrow[drr, "K"'] & & \bbR^n \times \bbR^n \ \arrow[d, "{\langle\cdot,\cdot \rangle}"] \\
 & & \mathbb{R}
@@ -150,7 +150,7 @@ That is, let $\mathcal{H}$ be the completion of $V$ by taking equivalence classe
 First of all, we immediately attain the analog to Proposition~\ref{finite-IP}:
 
 \begin{proposition}[Moore]
-  Let $\mathcal{X}$ be a set, and $K: \mathcal{X} \times \mathcal{X} \to \bbR$ a positive-definite kernel. Then, there exists a map $\Phi: \mathcal{X} \to \mathcal{H}$ into a Hilbert space such that the following map commutes:
+  Let $\mathcal{X}$ be a set, and $K: \mathcal{X} \times \mathcal{X} \to \bbR$ a positive-definite kernel. Then, there exists a map $\Phi: \mathcal{X} \to \mathcal{H}$ into a Hilbert space such that the following diagram commutes:
     \[\begin{tikzcd}
 \mathcal{X} \times \mathcal{X}\ \  \arrow[dashed, rr, "\Phi \times \Phi"] \arrow[drr, "K"'] & & \mathcal{H}\times \mathcal{H} \ \arrow[d, "{\langle\cdot,\cdot \rangle_\mathcal{H}}"] \\
 & & \bbR
@@ -231,8 +231,50 @@ maps into.
 
 Nevertheless, we would like to apply LSH techniques that are defined
 in the kernel space to search problems in the object space.
-  
-\subsection{Normal Distributions in RKHS} % dspeyer
+
+\subsection{LSH on the Sphere} %dspeyer
+
+\subsection{Attempt at KLSH} % geelon
+Let's try to kernelize the ball-carving LSH method. Given $\mathcal{X}$ and a
+normalized positive-definite kernel $K$,\footnote{One can normalize any positive-definite
+  kernel $K(x,y)$ by:
+  \[K'(x,y) = \frac{K(x,y)}{\sqrt{K(x,x)K(y,y)}}\].}
+one very natural way is to consider the embedding $\Phi(\mathcal{X}) \subset \mathcal{H}$
+inside the RKHS.
+
+In particular, because $K$ is normalized, all the points $\Phi(x)$ fall onto the unit sphere
+in $\mathcal{H}$, so it seems that we just need to ball-carve the sphere in $\mathcal{H}$.
+In the usual LSH situation in $\bbR^n$, we drew a Gaussian $g \sim \cN(0,1)^n$ and hashed
+according the function:
+\[h(x) = \sign\ \langle x, g\rangle.\]
+So it seems that we just need to replicate this within $\mathcal{H}$ instead of $\bbR^n$:
+\[h(x) = \sign\ \langle \Phi(x), g\rangle_\mathcal{H},\]
+where $g$ is drawn according to a Gaussian in $\mathcal{H}$. But here, we run into two problems:
+\begin{enumerate}
+\item if $\mathcal{H}$ is infinite-dimensional, it does not have a canonical Gaussian distribution, 
+\item if we don't have $\Phi$, how can we compute the inner product of $\Phi(x)$ with $g$?
+\end{enumerate}
+
+Let's examine the first problem and understand why an infinite-dimensional Hilbert space may not
+have a canonical Gaussian distribution---this will actually give us some more intuition on how
+$\Phi$ can embed $\mathcal{X}$ into $\mathcal{H}$. Following this, a natural solution to both
+problems will follow.
+
+\subsection{Infinite-Dimensional Normal Distributions} % geelon
+
+\begin{proposition}[{\cite[Example 2.2]{L2012}}] Let $\mathcal{H}$ be a separable Hilbert space.
+  A Gaussian distribution with covariance $\Sigma$ exists iff, in an appropriate base, $\Sigma$
+  has a diagonal form with non-negative eigenvalues, and the sums of these eigenvalues is finite.
+\end{proposition}
+
+In particular, this implies that no analog of the normal distribution $\mathcal{N}(0,I)$ exists in $\cH$ as the trace of $I$ is infinite. Although we won't prove this,\footnote{Additionally, the reader might notice that we have not actually defined what a Gaussian measure on $\cH$ is; we refer the reader to \cite{L2012} for details.} we can give intuition: the normal distribution in $\bbR^n$ is the product of $n$ independent normal Gaussians along $n$ orthogonal directions. As the number of dimensions go to infinity, we would find that the probability distribution would converges to 0 on $\mathcal{H}$.
+
+However, as the above proposition suggests, this is not to say that no Gaussian measures exist in $\cH$. Just that `most' of the variance of a Gaussian distribution will be concentrated within a finite number of directions.
+
+So heuristically, if we begin to think about how $\Phi(X)$ may be distributed within $\mathcal{H}$,
+
+\newpage 
+
 
 Most LSH techniques---including hyperplane carving the unit sphere,
 which will be our first attempt here---require drawing points $g$ from a
@@ -315,23 +357,28 @@ on the data.
 
 \subsection{Making the Calculations}
 
-\begin{thebibliography}{9}
+\section{References}
+\beginrefs
+
+\bibentry{A1950} Aronszajn, Nachman. \emph{Theory of reproducing kernels}. Transactions of the American mathematical society 68.3 (1950): 337-404.
+
+\bibentry{E2016} Eldredge, Nathaniel \emph{Analysis and probability on infinite-dimensional spaces}. arXiv preprint arXiv:1607.03591 (2016).
+
+\bibentry{G2013} Gretton, Arthur. \emph{Introduction to RKHS, and some simple kernel algorithms}. Adv. Top. Mach. Learn. Lecture Conducted from University College London (2013).
+
+\bibentry{H2008} Hofmann, Thomas, Bernhard Schölkopf, and Alexander J. Smola. \emph{Kernel methods in machine learning}. The annals of statistics (2008): 1171-1220.
+
+\bibentry{J2015} Jiang, Ke, Qichao Que, and Brian Kulis. \emph{Revisiting kernelized locality-sensitive hashing for improved large-scale image retrieval}. Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2015.
   
-\bibitem{A1950} Aronszajn, Nachman. \emph{Theory of reproducing kernels}. Transactions of the American mathematical society 68.3 (1950): 337-404.
+\bibentry{K2012} Kulis, Brian, and Kristen Grauman. \emph{Kernelized locality-sensitive hashing}. IEEE Transactions on Pattern Analysis and Machine Intelligence 34.6 (2012): 1092-1104.
 
-\bibitem{G2013} Gretton, Arthur. \emph{Introduction to RKHS, and some simple kernel algorithms}. Adv. Top. Mach. Learn. Lecture Conducted from University College London (2013).
+\bibentry{L2012} Lifshits, Mikhail. \emph{Lectures on Gaussian processes}. Lectures on Gaussian Processes. Springer Berlin Heidelberg, 2012. 1-117.
 
-\bibitem{H2008} Hofmann, Thomas, Bernhard Schölkopf, and Alexander J. Smola. \emph{Kernel methods in machine learning}. The annals of statistics (2008): 1171-1220.
+\bibentry{P2009} Paulsen, Vern I., and Mrinal Raghupathi. \emph{An introduction to the theory of reproducing kernel Hilbert spaces}. Vol. 152. Cambridge University Press, 2016. 
 
-\bibitem{J2015} Jiang, Ke, Qichao Que, and Brian Kulis. \emph{Revisiting kernelized locality-sensitive hashing for improved large-scale image retrieval}. Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2015.
-  
-\bibitem{K2012} Kulis, Brian, and Kristen Grauman. \emph{Kernelized locality-sensitive hashing}. IEEE Transactions on Pattern Analysis and Machine Intelligence 34.6 (2012): 1092-1104.
 
-\bibitem{P2009} Paulsen, Vern I., and Mrinal Raghupathi. \emph{An introduction to the theory of reproducing kernel Hilbert spaces}. Vol. 152. Cambridge University Press, 2016. 
-
-\end{thebibliography}
-
-\end{multicols}
+\endrefs
+%\end{multicols}
 
 
 \end{document}
