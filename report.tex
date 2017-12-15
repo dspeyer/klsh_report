@@ -29,7 +29,7 @@
   might find interesting to pursue.
 \end{abstract}
 
-%\begin{multicols}{2}
+\begin{multicols}{2}
 
 \section{Introduction}
 
@@ -246,11 +246,17 @@ LSH generally applies to distance metrics, hence the inequalities
 discussing $||x_1-x_2||$.  Kernels generally apply to similarity
 metrics.  How do we combine these ideas?
 
-The simplest case is when the data is already on a sphere in $bbR^n$
-with $\ell_2$ distance.  In this case, $||x_1-x_2||=\sqrt{\langle
-  x_1-x_2, x_1-x_2 \rangle}=\sqrt{\langle x_1,x_1 \rangle+\langle
-  x_2,x_2 \rangle - 2 \langle x_1,x_2 \rangle} = \sqrt{2(1-\langle
-  x_1,x_2 \rangle)}$.  In this case, saying $||x_1-x_2||<r$ as we did
+The simplest case is when the data is already on the $n$-sphere
+with the usual $\ell_2$ distance.  In this case,
+\begin{align*}
+  ||x_1-x_2|| &=\sqrt{\langle
+    x_1-x_2, x_1-x_2 \rangle} \\
+  &=\sqrt{\langle x_1,x_1 \rangle+\langle
+    x_2,x_2 \rangle - 2 \langle x_1,x_2 \rangle} \\
+  &= \sqrt{2(1-\langle
+    x_1,x_2 \rangle)}.
+\end{align*}
+In this case, saying $||x_1-x_2||<r$ as we did
 in our original inequality is equivalent to saying $\langle x_1,x_2
 \rangle > 1-r^2/2$.  This means the $c$ term becomes squared, which
 works to our benefit when constructing an Approximate Nearest Neighbor
@@ -259,22 +265,22 @@ algorithm.
 Not every distance metric can be converted into a similarity metric as
 cleanly.  If $\ell_1$ distance could be converted into a similarity
 metric and thence to an $\ell_2$ distance without sacrificing cr-near
-properties, such a transform could be used to perform cr-near neighbor
-searches with $\rho$ comparable to $\ell_2$ cr-nn, but this has been
+properties, such a transform could be used to perform $cr$-near neighbor
+searches with $\rho$ comparable to $\ell_2$ $cr$-NN, but this has been
 proven impossible [TODO: cite].
 
 One can convert a distance to a similarity using general formulas such
 as $k(x,y)=1-d(x,y)^2/\max(d)^2$ (analogous to the unit sphere) or
 $k(x,y)=\exp(-d(x,y))$ (if we wish to operate elegantly without
 needing to find the maximum distance), but these are not guaranteed to
-have nice cr-nn properties.
+have nice $cr$-NN properties.
 
 Often it is better to construct a new metric.  For example, the usual
 distance metric in genetic sequences is string-edit distance, usually
 with indels costing twice as much as changes.  This is too similar to
 $\ell_1$ to likely permit a good conversion.  However, one can also
-count k-mer frequency and take a normalized inner product (or, for
-longer k-mers, Hamming distance subtracted from $4^k$).  These are
+count $k$-mer frequency and take a normalized inner product (or, for
+longer $k$-mers, Hamming distance subtracted from $4^k$).  These are
 proper similarity metrics which predict evolutionary homology and
 analogy of function almost as well as string edit distance [TODO:
   cite].  The true test of similarity metric quality is an empirical
@@ -419,9 +425,10 @@ And of course, the truncated version would replace $d_\Phi$ with $N$, however ma
 In other words, we approximate $\cX$ using a large, but finite, sample $S = \{x_1,\dotsc, x_N\}$, then argue as before, on $S$ instead of $\cX$---$z$ is constructed from $t$ samples in $S$ and not $\cX$. In fact, this approximation step puts us on surer theoretical footing (as we never resolved questions of measurability or distribution of $\cX$ in $\cH$ if $\cX$ is infinite). And since our sample has $N$ points, the covariance $\Sigma_S$ will have at most $N$ nonzero eigenvalues.
 
 Because $\Sigma_S$ and $z$ are all defined in terms of points in $\cX$, and we use them in expressions involving just their inner products, we might be optimistic to find an expression for $h(x)$ using only the kernel mapping. And after some algebra, \cite{K2012} showed just that:
-\begin{equation}
-  h(x) = \sign \ \langle \Phi(x), \Sigma_S^{-1/2} z\rangle = \sign\left(\sum_{i=1}^t w_i \cdot K(x_i, x)\right),\
-\end{equation}
+\begin{align}
+  h(x) &= \sign \ \langle \Phi(x), \Sigma_S^{-1/2} z\rangle \nonumber\\ 
+  &= \sign\left(\sum_{i=1}^t w_i \cdot K(x_i, x)\right),\
+\end{align}
 where $w = \hat{K}^{-1/2}\mathbbm{1}_S$, $\hat{K}$ is the centered kernel matrix for $S$, and $\mathbbm{1}_S$ just the indicator vector for the sample $S$ in $\cX$. By randomly choosing different subcollections of $t$ points from within $S$, we obtain our family of random hashes for our arbitrary set $\cX$.
 
 
@@ -503,6 +510,8 @@ proved nor tested empirically.  But, from everything we can see, there
 have been no attempts to combine kernelized and data-dependent LSH, so
 we are optimistic about this approach.
 
+\end{multicols}
+\newpage
 \section*{References}
 \beginrefs
 
@@ -524,7 +533,7 @@ we are optimistic about this approach.
 
 
 \endrefs
-%\end{multicols}
+
 
 
 \end{document}
