@@ -42,6 +42,32 @@
 }
 \date{\today}
 
+
+% CITATIONS
+
+\RequirePackage{etoolbox}
+
+\newcommand\newcite[2][]{%
+  \ifstrempty{#1}{%
+    [#2]%
+  }{%
+    [#2, #1]%
+  }%
+}
+
+
+\let\cite\newcite
+
+%\renewcommand{\cite}[2][]{[#2]}
+\def\beginrefs{\begin{list}%
+        {[\arabic{equation}]}{\usecounter{equation}
+         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+         \setlength{\labelwidth}{1.6truecm}}}
+\def\endrefs{\end{list}}
+\def\bibentry#1{\item[\hbox{[#1]}]}
+
+
+
 % optional macros
 \RequirePackage{amsmath,amsbsy,amsfonts,amssymb,amsthm,dsfont}
 
