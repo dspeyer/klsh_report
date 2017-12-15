@@ -627,6 +627,24 @@ proved nor tested empirically.  But, from everything we can see, there
 have been no attempts to combine kernelized and data-dependent LSH, so
 we are optimistic about this approach.
 
+\section{Other Directions For Future Work}
+
+We introduced the idea of a distribution of $\Phi(\cX)$ which is easy
+to define for the finite database we actually have, but not for the
+full possible $\cX$ space.  Characterizing the latter rigorously might
+be interesting.
+
+We approximated the distribution of the averages using the CLT and the
+eigenvalues using a random sample.  The error induced by either
+approximation has not been formally studied (by anyone, as far as we
+can tell).  Empirically, choosing large enough $t$ and $N$ are easy,
+but this may not hold for all data.
+
+Most papers in KLSH begin by assuming a good similarity metric is
+available.  Directly examining metrics and how they relate to LSH in
+practice might be fruitful.  In particular, learning a similarity
+function via neural net might produce better end-to-end accuracy.
+
 \end{multicols}
 \newpage
 \section*{References}
