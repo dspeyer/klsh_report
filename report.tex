@@ -87,9 +87,9 @@ problem with arbitrarily high probability.
 Once we've solved the $cr$-NN problem, we can use that to solve the
 aproximate nearest neighbor (ANN) problem: finding a point in our database
 no more than $c$ times farther from the query than the closest point.
-The efficiency of this search is $O(n^\rho)$ [TODO: check this] where
+The efficiency of this search is $O(n^\rho)$  where
 $\rho=\log(1/p_1)/\log(1/p_2)$ and is bounded by a function of $c$.
-For $\bbR^n$ and $\ell_2$, $\rho>1/c^2$. [TODO: check and find citation]
+For $\bbR^n$ and $\ell_2$, $\rho>1/c^2$. \cite{OWZ2009}
 
 \subsection{Kernels} % geelon
 
@@ -376,7 +376,7 @@ cleanly.  If $\ell_1$ distance could be converted into a similarity
 metric and thence to an $\ell_2$ distance without sacrificing cr-near
 properties, such a transform could be used to perform $cr$-near neighbor
 searches with $\rho$ comparable to $\ell_2$ $cr$-NN, but this has been
-proven impossible [TODO: cite].
+proven impossible \cite{OWZ2009}
 
 One can convert a distance to a similarity using general formulas such
 as $k(x,y)=1-d(x,y)^2/\max(d)^2$ (analogous to the unit sphere) or
@@ -391,8 +391,8 @@ $\ell_1$ to likely permit a good conversion.  However, one can also
 count $k$-mer frequency and take a normalized inner product (or, for
 longer $k$-mers, Hamming distance subtracted from $4^k$).  These are
 proper similarity metrics which predict evolutionary homology and
-analogy of function almost as well as string edit distance [TODO:
-  cite].  The true test of similarity metric quality is an empirical
+analogy of function almost as well as string edit distance \cite{MWS+2012}.
+The true test of similarity metric quality is an empirical
 one.
 
 Similarly in images, you can describe distance as the length of the
@@ -400,7 +400,7 @@ series of edits to transform one image into the other (where each step
 is artistically simple), but this is often not the best predictor of
 human-judged similarity.  A more popular technique is to extract a set
 of features by convolution with random Gaussian or sinusoidal filters
-and use some form of normalized inner product.
+and use some form of normalized inner product. \cite{ZBMM2006}
 
 For a more general solution, one could train a deep neural net on
 pairs of objects that are and are not ``essentially'' the same.  The
@@ -546,8 +546,8 @@ where $w = \hat{K}^{-1/2}\mathbbm{1}_S$, $\hat{K}$ is the centered kernel matrix
 \subsection{Data-Dependent LSH}
 
 Random hyperplanes are not the most efficient form of LSH for a unit
-sphere.  They achieve only [TODO: look this up] while the best-known
-technique achieves $\rho=1/(2c^2-1)$.  This is better than the
+sphere.  They achieve only $\rho=1/c$ while the best-known
+technique achieves $\rho=1/(2c^2-1)$ \cite{AR15}.  This is better than the
 theoretical limit and is made possible by basing the hashing functions
 on the data.
 
@@ -626,6 +626,8 @@ we are optimistic about this approach.
 
 \bibentry{A1950} Aronszajn, Nachman. \emph{Theory of reproducing kernels}. Transactions of the American mathematical society 68.3 (1950): 337-404.
 
+\bibentry{AR15} Andoni, Alexandr and Razenshteyn, Ilya. \emph{Optimal Data-Dependent Hashing for Approximate Near Neighbors}. CoRR abs/1501.01062. 2015
+
 \bibentry{E2016} Eldredge, Nathaniel \emph{Analysis and probability on infinite-dimensional spaces}. arXiv preprint arXiv:1607.03591 (2016).
 
 \bibentry{G2013} Gretton, Arthur. \emph{Introduction to RKHS, and some simple kernel algorithms}. Adv. Top. Mach. Learn. Lecture Conducted from University College London (2013).
@@ -638,7 +640,13 @@ we are optimistic about this approach.
 
 \bibentry{L2012} Lifshits, Mikhail. \emph{Lectures on Gaussian processes}. Lectures on Gaussian Processes. Springer Berlin Heidelberg, 2012. 1-117.
 
+\bibentry{MWS+2012} Mahmood K, Webb GI, Song J, Whisstock JC, Konagurthu AS. \emph{Efficient large-scale protein sequence comparison and gene matching to identify orthologs and co-orthologs.} Nucleic Acids Research. 2012;40(6):e44. doi:10.1093/nar/gkr1261.
+
+\bibentry{OWZ2009} O'Donnell, Ryan and Wu, Yi and Zhou, Yuan. \emph{Optimal lower bounds for locality sensitive hashing (except when q is tiny)}. CoRR abs/0912.0250.  2009. 
+
 \bibentry{P2009} Paulsen, Vern I., and Mrinal Raghupathi. \emph{An introduction to the theory of reproducing kernel Hilbert spaces}. Vol. 152. Cambridge University Press, 2016. 
+
+\bibentry{ZBMM2006} Zhang and Berg and Maire and Malik, \emph{SVM-KNN: Discriminative Nearest Neighbor Classification for Visual Category Recognition}. IEEE Computer Society Conference on Computer Vision and Pattern Recognition (CVPR'06), 2006, pp. 2126-2136.
 
 
 \endrefs
