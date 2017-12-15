@@ -38,9 +38,12 @@ or NCBI's database for bacteria similar to the one found in our
 patient's throat.  We will need a rather unusual sort of database to
 do this with any efficiency.
 
-We will need to use locality specific hashing with an appropriate
-similarity function combined by kernel methods.  Let us begin by
-considering each of these requirements one at a time.
+Often, we use locality sensitive hashing (LSH) to solve such approximate
+nearest-neighbor problems. But these hashing families are defined on very
+specific spaces. In this paper, we will describe how, with an appropriate
+similarity function, we can extend LSH to these more unusual databases by
+kernel methods.  Let us begin by reviewing (1) LSH, (2) kernels, and (3)
+similarity measures.
 
 \subsection{LSH} % dspeyer
 
@@ -51,41 +54,38 @@ $n$, but unlike those solutions, it maintains its performance in high
 dimensions or in arbitrary metric spaces.
 
 Most near search problems can be reduced to cr-near search.  Suppose
-we have a database of points $x_1,x_2,...,x_n$ drawn from some
+we have a database of points $\{x_1,\dotsc,x_n\}$ drawn from some
 arbitrary metric space $\cX$ and some query $q$ also from $\cX$, plus
-constants $c,r\in\bbR$.  A cr-near search seeks either an $x$ within
+constants $c,r\in\bbR$.  A $cr$-near search seeks either an $x$ within
 distance $cr$ of $q$ or a statement that there are none within $r$.
 It is generally best to think of $r$ as part of the query and $c$ as
 the acceptable level of error.
 
-To use LSH for problems like this we will need a family of hashing
-functions $h_1,h_2,...$ that map $\cX$ into some small finite space,
-all following two key inequalities:
-
+To use LSH for problems like this we will need a family of randomly chosen
+hashing functions $h_1,h_2,\dotsc$ that partitions $\cX$ into some small
+finite space, all following two key inequalities:
 \begin{eqnarray*}
-  ||x_1-x_2|| < r & \rightarrow & Pr[h(x_1)=h(x_2)] \geq p_1 \\
-  ||x_1-x_2|| > cr & \rightarrow & Pr[h(x_1)=h(x_2)] \leq p_2 \\
+  ||x_1-x_2|| < r &\implies  \Pr[h(x_1)=h(x_2)] \geq p_1 \\
+  ||x_1-x_2|| > cr &\implies  \Pr[h(x_1)=h(x_2)] \leq p_2 \\
 \end{eqnarray*}
 
-Note that we may require an arbitrary number of hashing functions,
-which must be generated randomly.  It is this randomness that allows
-the use of probabilities in the preceding inequalities.  (The
-distribution of hashing functions is often written $\cH$, but we'll be
-reserving that symbol for Hilbert spaces later.)
+Note that we may require an arbitrary number of randomly-generated
+hashing functions; this family is often denoted by $\cH$ in the LSH
+literature, but we'll be reserving that symbol for Hilbert spaces later.
 
 In the simplest example, $\cX$ is a high dimensional Hamming space and
-the hash functions sample random columns.  This may provide useful
+the hash functions sample random coordinates.  This may provide useful
 intuition for thinking about hash functions.
 
 Once we have a source of functions and a gap between $p_1$ and $p_2$,
 we can widen the gap by taking $n$ functions and concatenating their
 outputs (getting $p_1^n$ and $p_2^n$).  We can then deal with too low
 a $p_1^n$ by taking $m$ repetitions and searching all of them (getting
-$mp_1^n$ and $mp_2^n$).  This solves the cr-near problem with
-arbitrarily high probability.
+$mp_1^n$ and $mp_2^n$).  This solves the $cr$-nearest neighbor ($cr$-NN)
+problem with arbitrarily high probability.
 
-Once we have the cr-nn problem solved, we can use that to solve the
-Aproximate Nearest Neighbor problem: finding a point in our database
+Once we've solved the $cr$-NN problem, we can use that to solve the
+aproximate nearest neighbor (ANN) problem: finding a point in our database
 no more than $c$ times farther from the query than the closest point.
 The efficiency of this search is $O(n^\rho)$ [TODO: check this] where
 $\rho=\log(1/p_1)/\log(1/p_2)$ and is bounded by a function of $c$.
@@ -93,77 +93,186 @@ For $\bbR^n$ and $\ell_2$, $\rho>1/c^2$. [TODO: check and find citation]
 
 \subsection{Kernels} % geelon
 
-In this section, we will motivate and describe the theory of kernel methods. We often develop mathematics and algorithms for objects that explicitly encode a lot of structure. For example, LSH has been developed for Hamming spaces, finite-dimensional vector spaces, $n$-spheres, and so on. These objects are particularly well-suited for analysis, as the very way we \emph{represent} them directly showcases their \emph{properties}. Often, the harmony between representation and structure empowers analysis and enables elegance.
+In this section, we will motivate and describe the theory of kernel methods.
+We often develop mathematics and algorithms for objects that explicitly
+encode a lot of structure. For example, LSH has been developed for Hamming
+spaces, finite-dimensional vector spaces, $n$-spheres, and so on. These
+objects are particularly well-suited for analysis, as the very way we
+\emph{represent} them directly showcases their \emph{properties}. Often,the
+harmony between representation and structure empowers analysis and enables elegance.
 
-But we can't expect harmony always. Nonetheless, might we be able to extend these methods to objects that have implicit structure?
+But we can't expect harmony always. Nonetheless, might we be able to extend these
+methods to objects that have implicit structure?
 
-Kernel methods are one way of approaching such situations. Let $\cX$ be our object---just an abstract set. But perhaps it has implicit structure. How might we access this structure? Very naturally, we can encode this structure into a mapping from that abstract set to a structure-rich mathematical object.
+Kernel methods are one way of approaching such situations. Take any object $\cX$
+---just an abstract set, say cat photos on flickr. But perhaps it has implicit
+structure. How might we access this structure? Very naturally, we can encode
+this structure into a mapping from that abstract set to a structure-rich
+mathematical object.
 
-We often do this without thinking, for example, assigning numbers to objects in order to compare them---a mapping of the form $\mathcal{X} \to \bbR$. Indeed, at a high level, we can consider different mathematical objects as the `canonical' idealization of certain types of structure; then, functions from $\mathcal{X}$ to these objects allow us to `pull back' or instantiate that structure within our specific $\mathcal{X}$.
+We often do this without thinking, for example, assigning numbers to objects
+in order to compare them---a mapping of the form $\mathcal{X} \to \bbR$. Indeed,
+at a high level, we can consider different mathematical objects as the `canonical'
+idealization of certain types of structure; then, functions from $\mathcal{X}$ to
+these objects allow us to `pull back' or instantiate that structure within our
+specific $\mathcal{X}$.
 
-Of course, the structure we care about with respect to LSH is \emph{similarity}, one idealization of which is the \emph{(real) inner product}. In fact, with kernel methods, we will be able to tightly bind any abstract object to an inner product space, provided the object has the right notion of similarity. This will provde us both new insight and new algorithms. Let us take a moment to reexamine the inner product on finite-dimensional real vector spaces, before generalizing to infinite-dimensional vector spaces and arbitrary sets.
+Of course, the structure we care about with respect to LSH is \emph{similarity},
+one idealization of which is the \emph{(real) inner product}. In fact, with kernel
+methods, we will be able to tightly bind any abstract object to an inner product
+space, provided the object has the right notion of similarity. From there, our
+knowledge about inner product spaces will provde us new insight and new algorithms.
+Let us take a moment to reexamine the inner product on finite-dimensional real
+vector spaces, before generalizing to infinite-dimensional vector spaces and
+arbitrary sets.
 
 \subsubsection{Finite-Dimensional Inner Product Spaces}
 \begin{definition}\label{IP}
-  Let $V$ be a (possibly infinite) vector space over $\bbR$. An \emph{inner product} on $V$ is a bilinear map $K : V \times V \to \bbR$
-  that is \emph{symmetric} and \emph{positive-definite}. We call the pair $(V,K)$ an \emph{inner product space}.
+  Let $V$ be a (possibly infinite) vector space over $\bbR$. An \emph{inner product}
+  on $V$ is a bilinear map $K : V \times V \to \bbR$
+  that is \emph{symmetric} and \emph{positive-definite}. We call the pair $(V,K)$ an
+  \emph{inner product space}.
 \end{definition}
-Symmetry and positive-definiteness are two of the most obvious requirements for any self-respecting function that calls itself a measure of similarity:
+Symmetry and positive-definiteness are two of the most obvious requirements for any
+self-respecting function that calls itself a measure of similarity:
 \begin{enumerate}
-\item  the similarity between two points $x$ and $y$ better not depend on the order we specify them, so we require $K(x,y) = K(y,x)$,
+\item  the similarity between two points $x$ and $y$ better not depend on the order
+  we specify them, so we require $K(x,y) = K(y,x)$,
 \item a nonzero object should be similar to itself, so if $x \ne 0$, then $K(x,x) > 0$.
 \end{enumerate}
-These two simple intuitions of a `similarity measure' then precisely define the conditions of an inner product on $V$.\footnote{For now, we can just view bilinearity as a necessary condition to ensure that $K$ respects the real numbers as an algebraic object. So, in some sense, bilinearity is not intrinsic to $K$; rather, it is a condition \emph{induced} by the field $\bbR$. Later on, when we generalize, we won't have a notion of linearity on arbitrary sets $\mathcal{X}$; however, there is a natural `completion' of $\mathcal{X}$, a vector space $\mathcal{H}$. As before, the linear structure will be induced by $\bbR$.} Allow us to be (perhaps overly) rigorous in the following discussion, for it is better to bore in the finite case than to confuse in the general case.
+These two simple intuitions of a `similarity measure' then precisely define the
+conditions of an inner product on $V$.\footnote{For now, we can just view bilinearity
+  as a necessary condition to ensure that $K$ respects the real numbers as an algebraic
+  object. So, in some sense, bilinearity is not intrinsic to $K$; rather, it is a
+  condition \emph{induced} by the field $\bbR$. Later on, when we generalize, we won't
+  have a notion of linearity on arbitrary sets $\mathcal{X}$; however, there is a
+  natural `completion' of $\mathcal{X}$, a vector space $\mathcal{H}$. As before, the
+  linear structure will be induced by $\bbR$.} Allow us to be (perhaps overly) rigorous
+in the following discussion, for it is better to bore in the finite case than to confuse
+in the general case.
 
-For concreteness, let $V$ be an $n$-dimensional real vector space with a fixed basis. With any $x,y \in V$, denote by $\langle x,y\rangle$ the \emph{formal dot product} of $x$ and $y$ as an algebraic construction.\footnote{One point of confusion may be that $\langle \cdot,\cdot \rangle$ often denotes an inner product---usually unproblematic as the dot product is in fact the inner product \emph{induced by the choice of basis} on $V$. However, an abstract vector space has no canonical basis; thus, it has no canonical inner product. In particular, here, the inner product corresponding to the dot product is in general unrelated to the inner product $K$. We will reconcile these two views at Equation~\ref{canonical-inner-prod}, which shows that every inner product corresponds to the dot product in an appropriate basis. Conversely, as every dot product is an inner product, if $V$ is an abstract finite-dimensional real vector space, \emph{specifying an inner product on $V$ is equivalent to specifying a basis on $V$}.} Then, as $K$ is a bilinear form, there exists a matrix $\mathbf{K}$ where
+For concreteness, let $V$ be an $n$-dimensional real vector space with a fixed basis.
+With any $x,y \in V$, denote by $\langle x,y\rangle$ the \emph{formal dot product} of
+$x$ and $y$ as an algebraic construction.\footnote{One point of confusion may be that
+  $\langle \cdot,\cdot \rangle$ often denotes an inner product---usually unproblematic
+  as the dot product is in fact the inner product \emph{induced by the choice of basis}
+  on $V$. However, an abstract vector space has no canonical basis; thus, it has no
+  canonical inner product. In particular, here, the inner product corresponding to the
+  dot product is in general unrelated to the inner product $K$. We will reconcile these
+  two views at Equation~\ref{canonical-inner-prod}, which shows that every inner product
+  corresponds to the dot product in an appropriate basis. Conversely, as every dot product
+  is an inner product, if $V$ is an abstract finite-dimensional real vector space,
+  \emph{specifying an inner product on $V$ is equivalent to specifying a basis on $V$}.}
+Then, as $K$ is a bilinear form, there exists a matrix $\mathbf{K}$ where
 \begin{equation}\label{kernel-history}
   K(x,y) = \langle x, \mathbf{K}y\rangle.
 \end{equation}
-The symmetry condition on the inner product $K$ forces the matrix $\mathbf{K}$ to be symmetric; we may appeal to the spectral theorem on symmetric matrices: $V$ has an orthonormal eigenbasis with respect to $\mathbf{K}$. Consider an eigenvalue $\mathbf{K} v = \lambda v$. Because $K$ is positive-definite, we know:
+The symmetry condition on the inner product $K$ forces the matrix $\mathbf{K}$ to be
+symmetric; we may appeal to the spectral theorem on symmetric matrices: $V$ has an
+orthonormal eigenbasis with respect to $\mathbf{K}$. Consider an eigenvalue
+$\mathbf{K} v = \lambda v$. Because $K$ is positive-definite, we know:
 \[K(v,v) = \langle v, \mathbf{K}v\rangle = \lambda \langle v,v\rangle> 0.\]
-Since the dot product of a vector with itself in any basis is nonnegative, this implies that the eigenvalue $\lambda$ is positive; so in its eigenbasis, $\mathbf{K}$ is diagonal with positive terms on its diagonal---it follows that $\mathbf{K}^{1/2}$ exists, and this allows us to write:
+Since the dot product of a vector with itself in any basis is nonnegative, this implies
+that the eigenvalue $\lambda$ is positive; so in its eigenbasis, $\mathbf{K}$ is diagonal
+with positive terms on its diagonal---it follows that $\mathbf{K}^{1/2}$ exists, and this
+allows us to write:
 \begin{equation}
   K(x,y) = \langle \mathbf{K}^{1/2} x, \mathbf{K}^{1/2}y\rangle.
 \end{equation}
-We deduce that there exists a linear map $\Phi: V \to \bbR^n$ (spoiler: we call $\Phi$ a \emph{feature map}) where the inner product on $V$ directly corresponds to the usual dot product on $\bbR^n$. That is,
+We deduce that there exists a linear map $\Phi: V \to \bbR^n$ (spoiler: we call $\Phi$
+a \emph{feature map}) where the inner product on $V$ directly corresponds to the usual
+dot product on $\bbR^n$. That is,
 \begin{equation}\label{canonical-inner-prod}
   K(x,y) = \langle \Phi(x), \Phi(y)\rangle.
 \end{equation}
 In other (ridiculously abstract) words, Equation~\ref{canonical-inner-prod} precisely says:
 \begin{proposition}\label{finite-IP}
-  Let $V$ be an $n$-dimensional real vector space. If $K : V \times V \to \bbR$ is an inner product, then there exists a map $\Phi: V \to \bbR^n$ such that the following diagram commutes:
+  Let $V$ be an $n$-dimensional real vector space. If $K : V \times V \to \bbR$ is an
+  inner product, then there exists a map $\Phi: V \to \bbR^n$ such that the following
+  diagram commutes:
   \[\begin{tikzcd}
-V \times V\ \  \arrow[dashed, rr, "\Phi \times \Phi"] \arrow[drr, "K"'] & & \bbR^n \times \bbR^n \ \arrow[d, "{\langle\cdot,\cdot \rangle}"] \\
-& & \mathbb{R}
+  V \times V\ \  \arrow[dashed, rr, "\Phi \times \Phi"] \arrow[drr, "K"'] & &
+  \bbR^n \times \bbR^n \ \arrow[d, "{\langle\cdot,\cdot \rangle}"] \\
+  & & \mathbb{R}
 \end{tikzcd}
 \]
   where $\langle \cdot, \cdot \rangle$ is the standard dot product on $\bbR^n$.
 \end{proposition}
-This is the main payoff to all this formality: we may view the pair $(\bbR^n, \langle\cdot,\cdot\rangle)$ as the canonical $n$-dimensional real inner product space. So, no matter which inner product space $(V,K)$ we want to study, we're in fact guaranteed the existence of an isomorphism $\Phi$ to the familiar inner product space $\bbR^n$, and we may freely interchange the two objects in our minds.
+This is the main payoff to all this formality: we may view the pair
+$(\bbR^n, \langle\cdot,\cdot\rangle)$ as the canonical $n$-dimensional real inner product
+space. So, no matter which inner product space $(V,K)$ we want to study, we're in fact
+guaranteed the existence of an isomorphism $\Phi$ to the familiar inner product space
+$\bbR^n$, and we may freely interchange the two objects in our minds.
 
-Furthermore, we are now justified in dropping the distinction between the formal dot product and inner product; let us denote both by $\langle \cdot, \cdot\rangle$.
+Furthermore, we are now justified in dropping the distinction between the formal dot
+product and inner product; let us denote both by $\langle \cdot, \cdot\rangle$.
 
 \subsubsection{Generalization: Kernels and Hilbert Spaces}
-First, we will need to extend the `similarity measure' from vector spaces $V$ to abstract sets $\mathcal{X}$. In the former, notice that given a basis $\{v_1,\dotsc, v_n\}$, the inner product $K$ is fully determined by the collection of values $K(v_i,v_j)$, where $i,j$ range between 1 and $n$. This follows from bilinearity of $K$ and is equivalent to saying that we can represent the bilinear form $K$ by a matrix of $n\times n$ values $\mathbf{K}$. In some sense, this means that there are only `$n$ ways' or `$n$ directions' in which objects of $V$ may be (dis)similar.
+First, we will need to extend the `similarity measure' from vector spaces $V$ to
+abstract sets $\mathcal{X}$. In the former, notice that given a basis
+$\{v_1,\dotsc, v_n\}$, the inner product $K$ is fully determined by the collection
+of values $K(v_i,v_j)$, where $i,j$ range between 1 and $n$. This follows from
+bilinearity of $K$ and is equivalent to saying that we can represent the bilinear
+form $K$ by a matrix of $n\times n$ values $\mathbf{K}$. In some sense, this means
+that there are only `$n$ ways' or `$n$ directions' in which objects of $V$ may be
+(dis)similar.
 
-This suggests that we can generalize the definition of inner products because we didn't need all of $V$ to start with! Suppose someone secretly had an $n$-dimensional inner product space $(V,K)$, but just gave us $n$ linearly independent vectors, say $[n] := \{v_1,\dotsc, v_n\}$, along with the corresponding restriction of the similarity measure $K: [n] \times [n] \to \bbR$.
+This suggests that we can generalize the definition of inner products because we
+didn't need to start with all of $V$! Suppose someone secretly had an $n$-dimensional
+inner product space $(V,K)$, but just gave us $n$ linearly independent vectors,
+say $[n] := \{v_1,\dotsc, v_n\}$, along with the corresponding restriction of the
+similarity measure $K: [n] \times [n] \to \bbR$.
 
-Our view of $[n]$ would just be a collection of $n$ abstract objects, and $K$ just an $n\times n$ matrix over $\bbR$ (this is often called the \emph{Gram matrix}). Still, we would have produced the same feature map $\Phi_{[n]}: [n] \hookrightarrow \bbR^n$, albeit restricted to $[n]\subset V$. But in the previous analysis, since $V$ and $\bbR^n$ are isomorphic via $\Phi$, this implies that $\Phi_{[n]}$ actually \emph{recovers} $V$ by its identification with $\bbR^n$; it is as though we've discovered the secret that $[n]$ lives inside the space $V$.
+Our view of $[n]$ would just be a collection of $n$ abstract objects, and $K$ just
+an $n\times n$ matrix over $\bbR$ (this is often called the \emph{Gram matrix}).
+Still, we would have produced the same feature map
+$\Phi_{[n]}: [n] \hookrightarrow \bbR^n$, albeit restricted to $[n]\subset V$. But
+in the previous analysis, since $V$ and $\bbR^n$ are isomorphic via $\Phi$, this
+implies that $\Phi_{[n]}$ actually \emph{recovers} $V$ by its identification with
+$\bbR^n$; it is as though we've discovered the secret that $[n]$ lives inside the
+space $V$.
 
-Very naturally, the generalization of $K$ from $[n]$ to $\mathcal{X}$ takes the view that $K$ is a similarity `matrix' on $\mathcal{X}$ (though we call it a \emph{kernel}):
-\begin{definition} Let $\mathcal{X}$ be a nonempty set. A \emph{kernel}\footnote{Unfortunately, the terminology \emph{kernel} can be terribly confusing. Within functional analysis, kernels are often interchangably called \emph{kernel maps}, \emph{kernel functions}, and \emph{positive-definite kernels}. Yet, each of these also take on other meanings depending on author and context. `Kernels' and `kernel maps' are almost always synonymous. Sometimes, `kernel functions' denote kernels of the form $K(x,y) = k(x-y)$, in situations where subtraction is defined. And in many instances, when context is clear, the author cares only for positive-definite kernels, so omitting the specifier \emph{positive-definite}.
+Very naturally, the generalization of $K$ from $[n]$ to $\mathcal{X}$ takes the
+view that $K$ is a similarity `matrix' on $\mathcal{X}$ (though we call it a
+\emph{kernel}):
+\begin{definition} Let $\mathcal{X}$ be a nonempty set. A \emph{kernel}
+  \footnote{Unfortunately, the terminology \emph{kernel} can be terribly confusing.
+    Within functional analysis, kernels are often interchangably called
+    \emph{kernel maps}, \emph{kernel functions}, and \emph{positive-definite kernels}.
+    Yet, each of these also take on other meanings depending on author and context.
+    `Kernels' and `kernel maps' are almost always synonymous. Sometimes, `kernel
+    functions' denote kernels of the form $K(x,y) = k(x-y)$, in situations where
+    subtraction is defined. And in many instances, when context is clear, the author
+    cares only for positive-definite kernels, so omitting the specifier
+    \emph{positive-definite}.
 
-    Furthermore, \emph{kernels} used in this sense are unrelated to the algebraic kernel of a linear map. The terminology comes from the theory of integral operators. In particular, infinite-dimensional function spaces often have inner products of the form:
+    Furthermore, \emph{kernels} used in this sense are unrelated to the algebraic
+    kernel of a linear map. The terminology comes from the theory of integral
+    operators. In particular, infinite-dimensional function spaces often have inner
+    products of the form:
     \[\langle f, g\rangle = \int_{X \times X} K(x,y) f(x) g(y) \ \mathrm{d}x \mathrm{d}y,\]
-    where the $K$ here performs the analogous role as $\langle x, \mathbf{K}y\rangle$ in Equation~\ref{kernel-history}. Actually, it performs precisely the role we desire in the general case. These maps $K$ were historically called kernels.
-  } is a map $K : \mathcal{X} \times \mathcal{X} \to \bbR$. We say that $K$ is \emph{positive-definite} if for any finite subsets $A$ of $\mathcal{X}$, the corresponding Gram matrix of $A$ is symmetric and positive-definite.
+    where the $K$ here performs the analogous role as $\langle x, \mathbf{K}y\rangle$
+    in Equation~\ref{kernel-history}. Actually, it performs precisely the role we
+    desire in the general case. These maps $K$ were historically called kernels.
+  }
+  is a map $K : \mathcal{X} \times \mathcal{X} \to \bbR$. We say that $K$ is
+  \emph{positive-definite} if for any finite subsets $A$ of $\mathcal{X}$, the
+  corresponding Gram matrix of $A$ is symmetric and positive-definite.
 \end{definition}
 
-In the finite case, we produced an embedding $\Phi_{[n]} : [n] \to \bbR^n$ of $[n]$ satisfying Equation~\ref{canonical-inner-prod} ($K$ corresponds to inner product). As we had only $n$ objects, it is clear that we needed an inner product space with at most $n$ dimensions, hence $\bbR^n$.
+In the finite case, we produced an embedding $\Phi_{[n]} : [n] \to \bbR^n$ of $[n]$
+satisfying Equation~\ref{canonical-inner-prod} ($K$ corresponds to the standard
+inner product). As we had only $n$ objects, it is clear that we needed an inner
+product space with at most $n$ dimensions, hence $\bbR^n$.
 
-However, in the general case, where $\mathcal{X}$ may be infinite, we might need infinite dimensions. Consider the real vector space $\bbR^\mathcal{X}$ (vector addition and scalar multiplication are defined pointwise), and the map $\Phi: \mathcal{X} \to \bbR^\mathcal{X}$ defined by:
+However, in the general case, where $\mathcal{X}$ may be infinite, we might need
+infinite dimensions. Consider the real vector space $\bbR^\mathcal{X}$ (vector addition
+and scalar multiplication are defined pointwise), and the map
+$\Phi: \mathcal{X} \to \bbR^\mathcal{X}$ defined by:
 \[\Phi(x) :=K(\cdot, x).\]
-For short, let $k_x := \Phi(x)$. Then, $\Phi$ maps $\mathcal{X}$ into a subset of $\bbR^\mathcal{X}$; let $V = \mathrm{span}(\Phi(\mathcal{X}))$ be a linear subspace of $\bbR^\mathcal{X}$, so that elements $f$ of $V$ are of the form:
+For short, let $k_x := \Phi(x)$. Then, $\Phi$ maps $\mathcal{X}$ into a subset of
+$\bbR^\mathcal{X}$; let $V = \mathrm{span}(\Phi(\mathcal{X}))$ be a linear subspace
+of $\bbR^\mathcal{X}$, so that elements $f$ of $V$ are of the form:
 \[f= \alpha_1k_{x_1} + \dotsm + \alpha_n k_{x_n},\]
 where $\alpha_i \in \bbR$ and $n$ ranges over $\bbN$. We claim that because $K$ is a positive-definite kernel, there exists a well-defined bilinear map on $V$, corresponding to our desired inner product. Of course, we want the inner product to satisfy:
 \[\langle k_x, k_y\rangle = K(x,y).\]
