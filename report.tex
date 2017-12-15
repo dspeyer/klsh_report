@@ -53,7 +53,7 @@ It is not as efficient as tree-based solutions for $\bbR^n$ with small
 $n$, but unlike those solutions, it maintains its performance in high
 dimensions or in arbitrary metric spaces.
 
-Most near search problems can be reduced to cr-near search.  Suppose
+Most near search problems can be reduced to $cr$-near search.  Suppose
 we have a database of points $\{x_1,\dotsc,x_n\}$ drawn from some
 arbitrary metric space $\cX$ and some query $q$ also from $\cX$, plus
 constants $c,r\in\bbR$.  A $cr$-near search seeks either an $x$ within
@@ -98,14 +98,14 @@ We often develop mathematics and algorithms for objects that explicitly
 encode a lot of structure. For example, LSH has been developed for Hamming
 spaces, finite-dimensional vector spaces, $n$-spheres, and so on. These
 objects are particularly well-suited for analysis, as the very way we
-\emph{represent} them directly showcases their \emph{properties}. Often,the
+\emph{represent} them directly showcases their \emph{properties}. Often, the
 harmony between representation and structure empowers analysis and enables elegance.
 
 But we can't expect harmony always. Nonetheless, might we be able to extend these
 methods to objects that have implicit structure?
 
-Kernel methods are one way of approaching such situations. Take any object $\cX$
----just an abstract set, say cat photos on flickr. But perhaps it has implicit
+Kernel methods are one way of approaching such situations. Take any object $\cX$---just
+an abstract set, say cat photos on flickr. But perhaps it has implicit
 structure. How might we access this structure? Very naturally, we can encode
 this structure into a mapping from that abstract set to a structure-rich
 mathematical object.
@@ -167,6 +167,10 @@ Then, as $K$ is a bilinear form, there exists a matrix $\mathbf{K}$ where
 \begin{equation}\label{kernel-history}
   K(x,y) = \langle x, \mathbf{K}y\rangle.
 \end{equation}
+We claim that because $K$ is symmetric and positive-definite, we actually have:
+\begin{equation}\label{sqrt-K}
+  K(x,y) = \langle \mathbf{K}^{1/2} x, \mathbf{K}^{1/2}y\rangle.
+\end{equation}
 The symmetry condition on the inner product $K$ forces the matrix $\mathbf{K}$ to be
 symmetric; we may appeal to the spectral theorem on symmetric matrices: $V$ has an
 orthonormal eigenbasis with respect to $\mathbf{K}$. Consider an eigenvalue
@@ -174,11 +178,9 @@ $\mathbf{K} v = \lambda v$. Because $K$ is positive-definite, we know:
 \[K(v,v) = \langle v, \mathbf{K}v\rangle = \lambda \langle v,v\rangle> 0.\]
 Since the dot product of a vector with itself in any basis is nonnegative, this implies
 that the eigenvalue $\lambda$ is positive; so in its eigenbasis, $\mathbf{K}$ is diagonal
-with positive terms on its diagonal---it follows that $\mathbf{K}^{1/2}$ exists, and this
-allows us to write:
-\begin{equation}
-  K(x,y) = \langle \mathbf{K}^{1/2} x, \mathbf{K}^{1/2}y\rangle.
-\end{equation}
+with positive terms on its diagonal---it follows that $\mathbf{K}^{1/2}$ exists, and thus
+we obtain Equation~\ref{sqrt-K}.
+
 We deduce that there exists a linear map $\Phi: V \to \bbR^n$ (spoiler: we call $\Phi$
 a \emph{feature map}) where the inner product on $V$ directly corresponds to the usual
 dot product on $\bbR^n$. That is,
@@ -235,8 +237,8 @@ space $V$.
 Very naturally, the generalization of $K$ from $[n]$ to $\mathcal{X}$ takes the
 view that $K$ is a similarity `matrix' on $\mathcal{X}$ (though we call it a
 \emph{kernel}):
-\begin{definition} Let $\mathcal{X}$ be a nonempty set. A \emph{kernel}
-  \footnote{Unfortunately, the terminology \emph{kernel} can be terribly confusing.
+\begin{definition} Let $\mathcal{X}$ be a nonempty set. A \emph{kernel}\footnote{Unfortunately,
+    the terminology \emph{kernel} can be terribly confusing.
     Within functional analysis, kernels are often interchangably called
     \emph{kernel maps}, \emph{kernel functions}, and \emph{positive-definite kernels}.
     Yet, each of these also take on other meanings depending on author and context.
@@ -266,15 +268,17 @@ inner product). As we had only $n$ objects, it is clear that we needed an inner
 product space with at most $n$ dimensions, hence $\bbR^n$.
 
 However, in the general case, where $\mathcal{X}$ may be infinite, we might need
-infinite dimensions. Consider the real vector space $\bbR^\mathcal{X}$ (vector addition
-and scalar multiplication are defined pointwise), and the map
-$\Phi: \mathcal{X} \to \bbR^\mathcal{X}$ defined by:
+infinite dimensions. Consider the real vector space of functions from $\cX$ to $\bbR$,
+denoted by $\bbR^\mathcal{X}$ (vector addition
+and scalar multiplication are defined pointwise). We construct the map
+$\Phi: \mathcal{X} \to \bbR^\mathcal{X}$ by:
 \[\Phi(x) :=K(\cdot, x).\]
 For short, let $k_x := \Phi(x)$. Then, $\Phi$ maps $\mathcal{X}$ into a subset of
-$\bbR^\mathcal{X}$; let $V = \mathrm{span}(\Phi(\mathcal{X}))$ be a linear subspace
-of $\bbR^\mathcal{X}$, so that elements $f$ of $V$ are of the form:
+$\bbR^\mathcal{X}$; let us denote $V$ by the subspace of $\bbR^\cX$ that $\Phi(\cX)$
+lives in. That is, $V = \mathrm{span}(\Phi(\mathcal{X}))$ is a linear subspace
+whose elements $f \in V$ are of the form:
 \[f= \alpha_1k_{x_1} + \dotsm + \alpha_n k_{x_n},\]
-where $\alpha_i \in \bbR$ and $n$ ranges over $\bbN$. We claim that because $K$ is a positive-definite kernel, there exists a well-defined bilinear map on $V$, corresponding to our desired inner product. Of course, we want the inner product to satisfy:
+where $\alpha_i \in \bbR$ and $n$ ranges over $\bbN$. We claim that because $K$ is a positive-definite kernel, there exists a well-defined bilinear map on $V$, corresponding to our desired inner product. Of course, we want the inner product on $V$ to satisfy:
 \[\langle k_x, k_y\rangle = K(x,y).\]
 But in fact, once we specify this, linearity determines the inner product on general elements $f = \sum_{i=1}^{n_1} \alpha_i k_{x_i}$ and $g = \sum_{j=1}^{n_2} \beta_j k_{y_j}$:
 \[\langle f, g \rangle = \sum_{i=1}^{n_1} \sum_{j=1}^{n_2} \alpha_i \beta_j K(x_i, y_j).\]
@@ -349,14 +353,14 @@ Still, we can still take advantage of the existence of $\Phi$; sometimes we can 
 
 In the rest of the paper, we'll look at how this may be done for LSH.
 
-\subsection{Similarity Metrics, Unusual and Usual} % dspeyer 
+\subsection{Similarity Measures}
   
 LSH generally applies to distance metrics, hence the inequalities
 discussing $||x_1-x_2||$.  Kernels generally apply to similarity
 metrics.  How do we combine these ideas?
 
 The simplest case is when the data is already on the $n$-sphere
-with the usual $\ell_2$ distance.  In this case,
+with the usual $\ell_2$ distance:
 \begin{align*}
   ||x_1-x_2|| &=\sqrt{\langle
     x_1-x_2, x_1-x_2 \rangle} \\
@@ -368,19 +372,18 @@ with the usual $\ell_2$ distance.  In this case,
 In this case, saying $||x_1-x_2||<r$ as we did
 in our original inequality is equivalent to saying $\langle x_1,x_2
 \rangle > 1-r^2/2$.  This means the $c$ term becomes squared, which
-works to our benefit when constructing an Approximate Nearest Neighbor
-algorithm.
+works to our benefit when constructing an ANN apgorithm.
 
 Not every distance metric can be converted into a similarity metric as
 cleanly.  If $\ell_1$ distance could be converted into a similarity
-metric and thence to an $\ell_2$ distance without sacrificing cr-near
+metric and thence to an $\ell_2$ distance without sacrificing $cr$-near
 properties, such a transform could be used to perform $cr$-near neighbor
 searches with $\rho$ comparable to $\ell_2$ $cr$-NN, but this has been
 proven impossible \cite{OWZ2009}
 
 One can convert a distance to a similarity using general formulas such
-as $k(x,y)=1-d(x,y)^2/\max(d)^2$ (analogous to the unit sphere) or
-$k(x,y)=\exp(-d(x,y))$ (if we wish to operate elegantly without
+as $k(x_1,x_2)=1-d(x_1,x_2)^2/\mathrm{diam}(\cX)^2$ (analogous to the unit sphere) or
+$k(x_1,x_2)=\exp(-d(x_1,x_2))$ (if we wish to operate elegantly without
 needing to find the maximum distance), but these are not guaranteed to
 have nice $cr$-NN properties.
 
@@ -397,20 +400,25 @@ one.
 
 Similarly in images, you can describe distance as the length of the
 series of edits to transform one image into the other (where each step
-is artistically simple), but this is often not the best predictor of
+is visually simple), but this is often not the best predictor of
 human-judged similarity.  A more popular technique is to extract a set
 of features by convolution with random Gaussian or sinusoidal filters
 and use some form of normalized inner product. \cite{ZBMM2006}
 
 For a more general solution, one could train a deep neural net on
-pairs of objects that are and are not ``essentially'' the same.  The
-final output would be a probability that they are.  A logistic forcing
-function would guarantee positive-definiteness, and adding all pairs
-of training data in both directions would guarantee symmetry.
+pairs of objects that are and are not ``essentially'' the same.  For
+example, two photos of the same cat from different angles are
+essentially the same, but photos of different cats are not.  The final
+output of the net $f$ would then be the probability that two objects are
+essentially the same.   If $f$ is not symmetric, we can fix that by using
+$f'(x,y)=(f(x,y)+f(y,x))/2$.  And if the neural net uses a logistic activation
+function, that will guarentee $0<f<1$ so the function will be
+trivially positive definite as well.
 
-In general, any similarity metric that seems intuitively correct or
-that correlates well to any practical purpose is likely to be
-positive-definite and symmetric, and therefore a valid kernel.
+In general, because the conditions for similarity metrics (symmetry
+and positive-definiteness)  were so intuitively motivated, it is
+likely that in many cases when we have some notion of similarity,
+we'll be able to produce a valid positive-definite kernel.
 
 \section{KLSH}
 
